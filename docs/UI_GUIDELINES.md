@@ -1,12 +1,12 @@
-# UI Guidelines — B2B Textile Marketplace
+# UI Guidelines & Component Inventory — B2B Textile Marketplace
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 1 — Design System & UI Foundation*
 
 ---
 
 ## Design Philosophy
 
-The UI must feel **premium, trustworthy, and efficient** — a professional B2B tool that buyers and suppliers use daily, not a consumer app.
+The UI must feel **premium, trustworthy, and efficient** — a professional B2B tool that buyers and suppliers use daily.
 
 **Principles:**
 1. **Clarity over decoration** — Every UI element serves a purpose.
@@ -16,115 +16,80 @@ The UI must feel **premium, trustworthy, and efficient** — a professional B2B 
 
 ---
 
-## Design System Location
+## Design Tokens Location & Theme System
 
-All tokens are defined in: `client/src/design-system/tokens.ts`  
-Extended into Tailwind config: `client/tailwind.config.ts`
+All tokens are defined in `client/src/design-system/tokens.ts` and registered directly with Tailwind CSS v4 in `client/src/index.css`.
 
-**NEVER hardcode design values. Always use tokens.**
-
----
-
-## Color Palette
-
-| Token              | Value (dark)   | Value (light)  | Usage                         |
-|--------------------|----------------|----------------|-------------------------------|
-| `brand-primary`    | `#2563EB`      | `#1D4ED8`      | CTAs, links, highlights       |
-| `brand-secondary`  | `#7C3AED`      | `#6D28D9`      | Accents, badges               |
-| `surface-1`        | `#0F172A`      | `#FFFFFF`      | Base background               |
-| `surface-2`        | `#1E293B`      | `#F8FAFC`      | Card backgrounds              |
-| `surface-3`        | `#334155`      | `#F1F5F9`      | Dividers, subtle areas        |
-| `text-primary`     | `#F8FAFC`      | `#0F172A`      | Main body text                |
-| `text-secondary`   | `#94A3B8`      | `#475569`      | Subtitles, placeholders       |
-| `text-muted`       | `#64748B`      | `#94A3B8`      | Disabled, metadata            |
-| `success`          | `#10B981`      | `#059669`      | Success states                |
-| `warning`          | `#F59E0B`      | `#D97706`      | Warnings, pending             |
-| `error`            | `#EF4444`      | `#DC2626`      | Errors, destructive actions   |
+Theme switching (`data-theme="dark"` / `data-theme="light"`) is dynamically handled by `<ThemeProvider>` in `client/src/shared/context/theme-context.tsx`.
 
 ---
 
-## Typography
+## Complete Component Inventory
 
-| Token           | Font               | Usage                    |
-|-----------------|--------------------|--------------------------|
-| `font-display`  | Outfit (Google)    | Headlines, hero text     |
-| `font-body`     | Inter (Google)     | Body text, UI elements   |
-| `font-mono`     | JetBrains Mono     | Code, IDs, SKUs          |
+### 1. Layout Components (`client/src/shared/components/layout/`)
+- **Container**: Max-width wrapper (`sm`, `md`, `lg`, `xl`, `2xl`, `full`) with responsive padding.
+- **Section**: Semantic `<section>` with title, subtitle, and border options.
+- **PageWrapper**: Full-page wrapper handling navbar offset and Framer Motion entry transitions.
+- **TopBar**: Announcement and notification strip.
+- **Navbar**: Main top navigation bar with brand logo, nav links, theme toggle, and mobile trigger.
+- **MobileNav**: Responsive slide-out drawer for small viewports.
+- **Sidebar**: Collapsible sidebar with grouped navigation items and badges.
+- **Footer**: Multi-column site footer with copyright and legal links.
+- **Breadcrumb**: Trail navigation with icons and current route highlighting.
+- **SearchHeader**: Hero section with gradient background blurs and search input.
 
-| Scale | Size  | Line Height | Usage              |
-|-------|-------|-------------|-------------------- |
-| `xs`  | 12px  | 16px        | Captions, metadata |
-| `sm`  | 14px  | 20px        | Small labels, hints|
-| `base`| 16px  | 24px        | Body text          |
-| `lg`  | 18px  | 28px        | Subtitles          |
-| `xl`  | 20px  | 28px        | Card titles        |
-| `2xl` | 24px  | 32px        | Section headings   |
-| `3xl` | 30px  | 36px        | Page headings      |
-| `4xl` | 36px  | 40px        | Hero headlines     |
+### 2. UI Primitives (`client/src/shared/components/ui/`)
+- **Button**: 7 variants (`primary`, `secondary`, `outline`, `ghost`, `danger`, `success`, `link`), 3 sizes, loading state, icon slots, press animation.
+- **Input**: Text input with label, hint, error text, prefix/suffix icons, ARIA attributes.
+- **PasswordInput**: Input with show/hide password toggle.
+- **Textarea**: Resizable textarea with character count indicator.
+- **Select**: Native select with custom chevron and error state.
+- **Checkbox**: Checkbox with label, description, error, and indeterminate state.
+- **Radio**: Radio button with label and description.
+- **Switch**: Toggle switch with size options and animated thumb.
+- **Badge**: 8 variants, dot indicator, removable tag mode.
+- **Avatar**: Image avatar with initials fallback, 6 sizes, online indicator.
+- **Card**: Surface card with `CardHeader`, `CardBody`, `CardFooter` slots, glassmorphism, and hover lift effects.
+- **Chip**: Removable filter chip with active brand states.
+- **Divider**: Horizontal/vertical line with optional label.
+- **Accordion**: Animated expand/collapse items using Framer Motion.
+- **Tabs**: Tab navigation with `underline`, `pills`, `segmented` variants and animated underline indicator.
+- **Tooltip**: Hover/focus tooltip with 4 placement options.
+- **QuantitySelector**: Meter counter input with +/- buttons and min/max clamping.
+- **TagInput**: Multi-tag creation field with Enter/Backspace support.
 
----
+### 3. Feedback Components (`client/src/shared/components/feedback/`)
+- **Alert**: 4 semantic feedback variants (`info`, `success`, `warning`, `error`), dismissible button.
+- **Banner**: Announcement banner strip.
+- **Modal**: Portal-rendered modal dialog with backdrop click, Escape key listener, and focus trap.
+- **ConfirmationDialog**: Pre-built confirmation dialog for destructive actions.
+- **Loader**: Page/section spinner overlay.
+- **Spinner**: Inline spinner for buttons and micro-loading.
+- **ProgressBar**: Animated progress bar with percentage readout.
+- **Skeleton**: Shimmer/pulse skeleton loaders with presets for cards, tables, and avatars.
+- **EmptyState**: Empty list graphic state with action CTA.
+- **ErrorState**: Exception error display with retry button.
+- **SuccessState**: Action confirmation display.
+- **OfflineState**: Network connection failure display.
+- **Popover**: Click-triggered floating popover container.
 
-## Spacing Scale
+### 4. Data Components (`client/src/shared/components/data/`)
+- **SearchInput**: Input with search icon, clear button, and spinner.
+- **Pagination**: Smart page numbers, first/last buttons, page size selector.
+- **Table**: Typed generic table with custom column renderers and skeleton row fallbacks.
+- **FilterPanel**: Sidebar filter facet container.
+- **SortDropdown**: Compact sort selection dropdown.
+- **StatsCard**: Metric KPI card with positive/negative trend badges.
+- **MetricCard**: Summary metric block with icons.
+- **ChartContainer**: Slot container for analytical charts.
 
-Based on 4px baseline grid: `4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96px`
-
----
-
-## Border Radius
-
-| Token    | Value  | Usage                         |
-|----------|--------|-------------------------------|
-| `sm`     | 4px    | Tags, badges                  |
-| `md`     | 8px    | Input fields, small buttons   |
-| `lg`     | 12px   | Cards                         |
-| `xl`     | 16px   | Modal dialogs                 |
-| `2xl`    | 24px   | Large panels                  |
-| `full`   | 9999px | Pills, avatars                |
-
----
-
-## Shadows
-
-| Token    | Usage                  |
-|----------|------------------------|
-| `sm`     | Small cards, dropdowns |
-| `md`     | Modals, dialogs        |
-| `lg`     | Floating panels        |
-| `glow`   | Focus states, CTAs     |
-
----
-
-## Animation Principles
-
-- **Duration:** 150ms (micro), 300ms (standard), 500ms (complex)
-- **Easing:** `ease-out` for entering, `ease-in` for leaving
-- **No animation for:** purely informational changes (don't animate data updates)
-- Use **Framer Motion** for all page/component transitions
-- Use **Tailwind transitions** for hover/focus states
-
----
-
-## Component Rules
-
-1. **Buttons** must have 3 variants: `primary`, `secondary`, `ghost`
-2. **Cards** must use `surface-2` background with `border surface-3`
-3. **Inputs** must show error state with red border + error message
-4. **Loading states** must use skeleton loaders, not spinners (except buttons)
-5. **Empty states** must have an icon + title + description + optional CTA
-6. **Toast notifications** use Sonner — no custom alerts
+### 5. Overlay Components (`client/src/shared/components/overlay/`)
+- **Drawer**: Sliding panel (left/right/bottom) with portal backdrop.
+- **Dropdown**: Contextual dropdown menu with dividers and danger items.
 
 ---
 
-## Responsive Breakpoints
+## Interactive Showcase
 
-| Token  | Width   | Target                  |
-|--------|---------|-------------------------|
-| `sm`   | 640px   | Large mobile            |
-| `md`   | 768px   | Tablet                  |
-| `lg`   | 1024px  | Laptop                  |
-| `xl`   | 1280px  | Desktop                 |
-| `2xl`  | 1536px  | Wide desktop            |
-
----
-
-*Update this file whenever design decisions change.*
+Run dev server and navigate to:
+`http://localhost:5173/dev/components`

@@ -1,0 +1,146 @@
+import { useFormContext } from 'react-hook-form'
+import { Input } from '@/shared/components/ui/input'
+
+export function SupplierBusinessStep() {
+  const { register, formState: { errors } } = useFormContext()
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Business Details</h2>
+      <p className="text-text-secondary text-sm mb-4">Let's start with the basics of your company.</p>
+      
+      <Input
+        label="Company Name"
+        placeholder="Enter your company name"
+        error={errors.companyName?.message as string}
+        {...register('companyName')}
+      />
+      <Input
+        label="Business Type"
+        placeholder="e.g. Manufacturer, Wholesaler"
+        error={errors.businessType?.message as string}
+        {...register('businessType')}
+      />
+    </div>
+  )
+}
+
+export function SupplierGSTStep() {
+  const { register, formState: { errors } } = useFormContext()
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Legal & Contact</h2>
+      <p className="text-text-secondary text-sm mb-4">Provide your legal information and contact details.</p>
+      
+      <Input
+        label="GST Number"
+        placeholder="e.g. 22AAAAA0000A1Z5"
+        error={errors.gstNumber?.message as string}
+        {...register('gstNumber')}
+      />
+      <Input
+        label="Phone Number"
+        type="tel"
+        placeholder="+91"
+        error={errors.phone?.message as string}
+        {...register('phone')}
+      />
+      <Input
+        label="Website"
+        type="url"
+        placeholder="https://..."
+        error={errors.website?.message as string}
+        {...register('website')}
+      />
+    </div>
+  )
+}
+
+export function SupplierProductionStep() {
+  const { register, formState: { errors } } = useFormContext()
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Production Capabilities</h2>
+      <p className="text-text-secondary text-sm mb-4">Help buyers understand what you can deliver.</p>
+      
+      <Input
+        label="Minimum Order Quantity (MOQ)"
+        placeholder="e.g. 100 meters"
+        error={errors.moq?.message as string}
+        {...register('moq')}
+      />
+      <Input
+        label="Production Capacity"
+        placeholder="e.g. 10000 meters/month"
+        error={errors.productionCapacity?.message as string}
+        {...register('productionCapacity')}
+      />
+      <Input
+        label="Average Lead Time"
+        placeholder="e.g. 14 days"
+        error={errors.leadTime?.message as string}
+        {...register('leadTime')}
+      />
+    </div>
+  )
+}
+
+export function SupplierCategoriesStep() {
+  const { register, formState: { errors } } = useFormContext()
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Categories & Products</h2>
+      <p className="text-text-secondary text-sm mb-4">What kind of textiles do you specialize in? (Comma separated for now)</p>
+      
+      <Input
+        label="Categories"
+        placeholder="Cotton, Silk, Linen"
+        error={errors.categories?.message as string}
+        {...register('categories')}
+      />
+      <Input
+        label="Product Types"
+        placeholder="Yarn, Fabric, Garments"
+        error={errors.productTypes?.message as string}
+        {...register('productTypes')}
+      />
+    </div>
+  )
+}
+
+export function SupplierBrandingStep() {
+  const { register, formState: { errors } } = useFormContext()
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Branding & Identity</h2>
+      <p className="text-text-secondary text-sm mb-4">Make your profile stand out to buyers.</p>
+      
+      <Input
+        label="Description"
+        placeholder="Tell buyers about your company..."
+        error={errors.description?.message as string}
+        {...register('description')}
+      />
+      
+      {/* Cloudinary fallback placeholder */}
+      <div className="border border-dashed border-border-color rounded-lg p-6 flex flex-col items-center justify-center text-text-secondary bg-surface-50 mt-2">
+        <span className="text-2xl mb-2">📸</span>
+        <p className="text-sm font-medium">Image Upload</p>
+        <p className="text-xs mt-1 text-center">Cloudinary integration is pending. Your profile will use beautiful placeholders for now.</p>
+      </div>
+    </div>
+  )
+}
+
+export function SupplierReviewStep() {
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold text-text-primary">Review Profile</h2>
+      <p className="text-text-secondary text-sm mb-4">Almost there! Review your details before completing.</p>
+      
+      <div className="bg-surface-50 p-4 rounded-lg border border-border-color flex flex-col gap-2">
+        <p className="text-sm text-text-primary flex justify-between"><span>All steps completed</span> <span className="text-success font-bold">100%</span></p>
+        <p className="text-xs text-text-secondary">Your profile looks great and is ready to be published to the marketplace.</p>
+      </div>
+    </div>
+  )
+}

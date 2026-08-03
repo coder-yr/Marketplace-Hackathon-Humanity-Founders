@@ -1,6 +1,6 @@
 # API Reference — B2B Textile Marketplace
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 2A — Authentication & Authorization*
 
 ---
 
@@ -47,7 +47,7 @@
 
 ---
 
-### Auth (Phase 1)
+### Auth (Phase 2A)
 
 | Method | Path                    | Auth | Description              |
 |--------|-------------------------|------|--------------------------|
@@ -59,23 +59,25 @@
 
 ---
 
-### Products (Phase 2)
+### Products (Phase 3A)
 
 | Method | Path                       | Auth     | Description               |
 |--------|----------------------------|----------|---------------------------|
-| GET    | /api/products              | No       | List products (paginated) |
-| GET    | /api/products/:id          | No       | Get product by ID         |
-| POST   | /api/products              | Supplier | Create product            |
+| GET    | /api/products              | No       | Search & list products    |
+| GET    | /api/products/featured     | No       | Get featured products     |
+| GET    | /api/products/:idOrSlug    | No       | Get product & supplier    |
+| POST   | /api/products              | Supplier | Create new product        |
 | PUT    | /api/products/:id          | Supplier | Update product            |
 | DELETE | /api/products/:id          | Supplier | Soft delete product       |
 
 ---
 
-### Categories (Phase 0 — seeded)
+### Categories (Phase 3A)
 
 | Method | Path              | Auth | Description           |
 |--------|-------------------|------|-----------------------|
 | GET    | /api/categories   | No   | List all categories   |
+| GET    | /api/categories/:slug | No | Get category by slug |
 
 ---
 

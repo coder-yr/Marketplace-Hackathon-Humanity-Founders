@@ -1,6 +1,6 @@
 # Architecture — B2B Textile Marketplace
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 2A — Authentication & Authorization*
 
 ---
 
@@ -43,9 +43,7 @@ The system follows a **client-server architecture** with a clear separation of c
 
 ## Frontend Architecture
 
-**Pattern:** Feature-Based Architecture
-
-Each feature is a self-contained module with its own components, hooks, services, and types.
+**Pattern:** Feature-Based Architecture with Shared UI Core
 
 ```
 client/src/
@@ -54,24 +52,30 @@ client/src/
 │   ├── buyer/             # Buyer-specific pages and logic
 │   ├── supplier/          # Supplier-specific pages and logic
 │   ├── products/          # Product listing, detail, search
-│   ├── cart/              # Cart and wishlist
 │   ├── orders/            # Order management
-│   └── ai/                # AI search and recommendations
+│   ├── ai/                # AI search and recommendations
+│   ├── dev/               # Component showcase (/dev/components)
+│   └── home/              # Homepage
 ├── shared/
-│   ├── components/        # Reusable UI components
-│   ├── layouts/           # Page layouts (MainLayout, AuthLayout)
-│   ├── hooks/             # Shared custom hooks
-│   ├── utils/             # Pure utility functions
-│   ├── design-system/     # Tokens, theme, component variants
-│   └── assets/            # Static assets (images, icons)
-├── routes/                # React Router configuration
+│   ├── components/        # Master barrel export (@/shared/components)
+│   │   ├── layout/        # Navbar, Sidebar, Footer, Container, TopBar, Breadcrumb...
+│   │   ├── ui/            # Button, Input, Select, Badge, Card, Accordion, Tabs...
+│   │   ├── feedback/      # Alert, Banner, Modal, Skeleton, Loader, Popover...
+│   │   ├── data/          # Table, Pagination, FilterPanel, StatsCard...
+│   │   └── overlay/       # Drawer, Dropdown
+│   ├── animations/        # Framer Motion variants & transitions
+│   ├── context/           # ThemeProvider (Dark / Light mode)
+│   ├── hooks/             # useTheme, useMediaQuery, useDebounce, useDisclosure...
+│   ├── utils/             # cn() tailwind-merge helper, api-client
+│   └── layouts/           # MainLayout
+├── routes/                # AppRouter with /dev/components route
 ├── types/                 # Shared TypeScript types
 └── constants/             # App-wide constants
 ```
 
 **Rules:**
 - Features may NOT import from other features.
-- Features may import from `shared/`.
+- Features MUST import shared UI primitives from `@/shared/components`.
 - `shared/` must never import from `features/`.
 
 ---
@@ -89,17 +93,8 @@ server/src/
 ├── middleware/            # Auth, error handling, logging
 ├── validators/            # Zod request schemas
 ├── models/                # Mongoose models + TS interfaces
-├── config/                # DB, Cloudinary, env config
-├── utils/                 # Shared utilities
-├── scripts/               # Seed scripts, migrations
-└── ai/                    # AI integration layer
-```
-
-**Request Flow:**
-```
-Request → Route → Middleware → Validator → Controller → Service → Repository → MongoDB
-                                                                ↓
-                                                          Cloudinary / Hugging Face
+├── config/                # DB, env, logger config
+└── scripts/               # Seed scripts
 ```
 
 ---
@@ -108,13 +103,9 @@ Request → Route → Middleware → Validator → Controller → Service → Re
 
 | Decision | Choice | Reason |
 |----------|--------|--------|
-| Monorepo structure | `/client` + `/server` in one repo | Easier coordination in hackathon |
-| Feature-based frontend | Yes | Scalable, avoids coupling |
-| Layered backend | Yes | Testable, clear separation |
-| MongoDB | Atlas cloud | No infra to manage |
-| File storage | Cloudinary | Free tier, transforms built-in |
-| AI model | sentence-transformers/all-MiniLM-L6-v2 | Fast, free, good for semantic search |
-
----
-
-*If architecture changes: update this file FIRST, explain why, then implement.*
+| Monorepo structure | `/client` + `/server` in one repo | Faster coordination in hackathon |
+| UI Component Architecture | Master Design System (`shared/components`) | Ensures 100% UI consistency across phases |
+| Theme System | CSS variables + Tailwind v4 + ThemeProvider | Instant dark/light mode toggle |
+| Component Showcase | `/dev/components` route | Acts as interactive Storybook for testing |
+| Authentication | JWT + `localStorage` + Axios Interceptors | Standard SPA auth flow; interceptors handle silent refresh |
+| Authorization | RBAC Middlewares + `ProtectedRoute` Guard | Encapsulates access control logic away from business components |

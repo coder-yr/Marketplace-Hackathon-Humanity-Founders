@@ -1,14 +1,19 @@
-import { CategoryRepository } from '../repositories/category.repository'
-import { ICategory } from '../models/category.model'
+import { categoryRepository } from '../repositories/category.repository'
+import { AppError } from '../middleware/errorHandler'
+import { CategoryQueryInput } from '../validators/category.validator'
 
 export class CategoryService {
-  private readonly repository: CategoryRepository
-
-  constructor() {
-    this.repository = new CategoryRepository()
+  async getAllCategories(query: Partial<CategoryQueryInput> = {}) {
+    return await categoryRepository.findAll(query)
   }
 
-  async findAll(): Promise<ICategory[]> {
-    return this.repository.findAll()
+  async getCategoryBySlug(slug: string) {
+    const category = await categoryRepository.findBySlug(slug)
+    if (!category) {
+      throw new AppError('Category not found', 404)
+    }
+    return category
   }
 }
+
+export const categoryService = new CategoryService()

@@ -1,6 +1,6 @@
 # Database — B2B Textile Marketplace
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 2A — Authentication & Authorization*
 
 ---
 
@@ -12,13 +12,23 @@
 
 ---
 
-## Collections (Planned)
+## Active Collections (Phase 3A)
+
+### `categories`
+Stores textile categories and fabric classifications.
+- `name` (String), `slug` (String, unique), `description` (String), `imageUrl` (String), `icon` (String), `parentCategory` (Ref Category), `featured` (Boolean), `sortOrder` (Number), `isActive` (Boolean).
+
+### `products`
+Stores B2B textile products listed by suppliers.
+- `supplierId` (Ref User), `title` (String), `slug` (String, unique), `shortDescription` (String), `description` (String), `category` (Ref Category), `subCategory` (String), `fabricType` (String), `images` (String[]), `priceRange` ({min, max, currency, unit}), `moq` ({value, unit}), `leadTime` (String), `stockStatus` (enum: in_stock, made_to_order, out_of_stock), `certifications` (String[]), `tags` (String[]), `specifications` (Map<String, String>), `featured` (Boolean), `published` (Boolean), `status` (enum: active, draft, archived), `isDeleted` (Boolean).
+- **Text Search Index**: Weighted on `title` (10), `tags` (5), `fabricType` (5), `shortDescription` (3), `description` (1).
+
+---
+
+## Collections (Planned for Future Phases)
 
 | Collection         | Purpose                                      |
 |--------------------|----------------------------------------------|
-| `users`            | Buyers and suppliers                         |
-| `products`         | Textile product listings                     |
-| `categories`       | Fabric categories (seeded)                   |
 | `orders`           | Buyer orders                                 |
 | `rfqs`             | Request for Quotations                       |
 | `conversations`    | Chat threads between buyer & supplier        |

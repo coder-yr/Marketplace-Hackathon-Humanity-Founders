@@ -1,10 +1,14 @@
-import { Schema, model, Document } from 'mongoose'
+import { Schema, model, Document, Types } from 'mongoose'
 
 export interface ICategory extends Document {
   name: string
   slug: string
   description: string
   imageUrl?: string
+  icon?: string
+  parentCategory?: Types.ObjectId
+  featured: boolean
+  sortOrder: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -36,6 +40,23 @@ const categorySchema = new Schema<ICategory>(
       type: String,
       trim: true,
     },
+    icon: {
+      type: String,
+      trim: true,
+    },
+    parentCategory: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      default: null,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    sortOrder: {
+      type: Number,
+      default: 0,
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -49,5 +70,7 @@ const categorySchema = new Schema<ICategory>(
 
 categorySchema.index({ slug: 1 }, { unique: true })
 categorySchema.index({ isActive: 1 })
+categorySchema.index({ featured: 1 })
+categorySchema.index({ sortOrder: 1 })
 
 export const Category = model<ICategory>('Category', categorySchema)

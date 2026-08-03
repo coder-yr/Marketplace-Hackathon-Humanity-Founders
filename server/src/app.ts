@@ -1,13 +1,23 @@
 import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import pinoHttp from 'pino-http'
 import { logger } from './config/logger'
 import { env } from './config/env'
 import { errorHandler } from './middleware/errorHandler'
 import { notFoundHandler } from './middleware/notFoundHandler'
+import { authRouter } from './routes/auth.routes'
+import profileRoutes from './routes/profile.routes'
 import { healthRouter } from './routes/health.routes'
 import { categoryRouter } from './routes/category.routes'
+import { productRouter } from './routes/product.routes'
+import aiRoutes from './routes/ai.routes'
+import { notificationRouter } from './routes/notification.routes'
+import { rfqRouter } from './routes/rfq.routes'
+import { quoteRouter } from './routes/quote.routes'
+import { orderRouter } from './routes/order.routes'
+import { messageRouter } from './routes/message.routes'
 
 const app = express()
 
@@ -25,6 +35,7 @@ app.use(
 // ── Request Parsing ──────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+app.use(cookieParser())
 
 // ── HTTP Logging ─────────────────────────────────────────────────
 app.use(
@@ -40,7 +51,16 @@ app.use(
 
 // ── Routes ────────────────────────────────────────────────────────
 app.use('/api/health', healthRouter)
+app.use('/api/auth', authRouter)
 app.use('/api/categories', categoryRouter)
+app.use('/api/products', productRouter)
+app.use('/api/profiles', profileRoutes)
+app.use('/api/ai', aiRoutes)
+app.use('/api/notifications', notificationRouter)
+app.use('/api/rfqs', rfqRouter)
+app.use('/api/quotes', quoteRouter)
+app.use('/api/orders', orderRouter)
+app.use('/api/messages', messageRouter)
 
 // ── Error Handling ────────────────────────────────────────────────
 app.use(notFoundHandler)
