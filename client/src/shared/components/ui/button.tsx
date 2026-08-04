@@ -35,66 +35,63 @@ export interface ButtonProps
 // ── Style maps ────────────────────────────────────────────────────
 const variantStyles: Record<ButtonVariant, string> = {
   primary: [
-    'bg-gradient-to-b from-[var(--color-brand-primary-light)] to-[var(--color-brand-primary)] text-white',
-    'hover:from-[var(--color-brand-primary)] hover:to-[var(--color-brand-primary-hover)]',
-    'active:from-[var(--color-brand-primary-hover)] active:to-[var(--color-brand-primary-hover)]',
-    'shadow-[0_4px_14px_0_rgb(37_99_235_/_39%)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)]',
-    'hover:-translate-y-0.5',
+    'bg-[var(--primary)] text-white font-bold',
+    'hover:bg-[var(--primary-hover)] hover:shadow-md hover:-translate-y-px',
+    'active:bg-[var(--primary-hover)]',
     'border border-transparent'
   ].join(' '),
 
   secondary: [
-    'bg-[var(--surface-2)] text-[var(--text-primary)]',
-    'hover:bg-[var(--surface-3)]',
-    'active:bg-[var(--surface-4)]',
-    'border border-[var(--border-color)]',
-    'shadow-sm hover:shadow-md hover:-translate-y-px'
+    'bg-[#F8FAFC] text-[var(--heading)] font-bold',
+    'hover:bg-[#F1F5F9] hover:shadow-sm hover:-translate-y-px',
+    'active:bg-[#E2E8F0]',
+    'border border-[var(--border)]',
   ].join(' '),
 
   outline: [
-    'bg-transparent text-[var(--color-brand-primary)]',
-    'border border-[var(--color-brand-primary)]',
-    'hover:bg-[var(--color-brand-primary)] hover:text-white hover:shadow-md hover:-translate-y-px',
-    'active:bg-[var(--color-brand-primary-hover)]',
+    'bg-transparent text-[var(--body)] font-bold',
+    'border border-[var(--border)]',
+    'hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[#F8FAFC] hover:-translate-y-px',
+    'active:bg-[#F1F5F9]',
   ].join(' '),
 
   ghost: [
-    'bg-transparent text-[var(--text-secondary)]',
-    'hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]',
-    'active:bg-[var(--surface-3)]',
+    'bg-transparent text-[var(--body)] font-bold',
+    'hover:bg-[#F8FAFC] hover:text-[var(--heading)]',
+    'active:bg-[#F1F5F9]',
   ].join(' '),
 
   danger: [
-    'bg-gradient-to-b from-red-500 to-[var(--color-error)] text-white',
-    'hover:from-[var(--color-error)] hover:to-[var(--color-error-dark)]',
-    'active:from-[var(--color-error-dark)] active:to-[var(--color-error-dark)]',
-    'shadow-[0_4px_14px_0_rgb(239_68_68_/_39%)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5',
+    'bg-[var(--error)] text-white font-bold',
+    'hover:bg-[#B91C1C] hover:shadow-md hover:-translate-y-px',
+    'active:bg-[#991B1B]',
+    'border border-transparent'
   ].join(' '),
 
   success: [
-    'bg-gradient-to-b from-emerald-500 to-[var(--color-success)] text-white',
-    'hover:from-[var(--color-success)] hover:to-[var(--color-success-dark)]',
-    'active:from-[var(--color-success-dark)] active:to-[var(--color-success-dark)]',
-    'shadow-[0_4px_14px_0_rgb(16_185_129_/_39%)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:-translate-y-0.5',
+    'bg-[var(--success)] text-white font-bold',
+    'hover:bg-[#15803D] hover:shadow-md hover:-translate-y-px',
+    'active:bg-[#166534]',
+    'border border-transparent'
   ].join(' '),
 
   link: [
-    'bg-transparent text-[var(--color-brand-primary)] underline-offset-4',
-    'hover:underline hover:text-[var(--color-brand-primary-hover)]',
+    'bg-transparent text-[var(--primary)] underline-offset-4 font-bold',
+    'hover:underline hover:text-[var(--primary-hover)]',
     'p-0 h-auto',
   ].join(' '),
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm gap-1.5 rounded-md',
-  md: 'h-10 px-4 text-sm gap-2 rounded-lg',
-  lg: 'h-12 px-6 text-base gap-2.5 rounded-lg',
+  sm: 'h-8 px-4 text-[13px] gap-1.5 rounded-[10px]',
+  md: 'h-10 px-5 text-[14px] gap-2 rounded-[12px]',
+  lg: 'h-12 px-6 text-[15px] gap-2.5 rounded-[12px]',
 }
 
 const iconOnlySizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 w-8 rounded-md',
-  md: 'h-10 w-10 rounded-lg',
-  lg: 'h-12 w-12 rounded-lg',
+  sm: 'h-8 w-8 rounded-[10px]',
+  md: 'h-10 w-10 rounded-[12px]',
+  lg: 'h-12 w-12 rounded-[12px]',
 }
 
 // ── Component ─────────────────────────────────────────────────────
@@ -120,13 +117,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const baseStyles = cn(
       // Base
-      'inline-flex items-center justify-center font-semibold',
+      'inline-flex items-center justify-center',
       'select-none whitespace-nowrap',
-      'transition-all duration-[var(--duration-fast)]',
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-1)]',
+      'transition-all duration-[120ms]', // Hover animation timing
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2',
       fullWidth && 'w-full',
       // Disabled
-      isDisabled && 'opacity-50 pointer-events-none',
+      isDisabled && 'opacity-50 pointer-events-none cursor-not-allowed',
       // Variant
       variantStyles[variant],
       // Size
@@ -180,8 +177,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         aria-disabled={isDisabled}
         aria-busy={loading}
-        whileTap={!isDisabled ? { scale: 0.95 } : undefined}
-        transition={{ duration: 0.1, ease: 'easeOut' }}
+        whileTap={!isDisabled ? { scale: 0.97 } : undefined}
+        transition={{ duration: 0.08, ease: 'easeOut' }} // 80ms button press
         {...(props as object)}
       >
         {content}

@@ -30,6 +30,22 @@ export interface Quote {
   validUntil: string
   notes?: string
   status: QuoteStatus
+  aiRiskAnalysis?: {
+    level: 'Low' | 'Medium' | 'High'
+    reasons: string[]
+  }
+  aiCostInsights?: {
+    marketAverage: number
+    suggestedTarget: number
+  }
+  aiNegotiationSuggestions?: {
+    suggestedCounterOffer: number
+    reasons: string[]
+  }
+  aiAlternativeSuppliers?: Array<{
+    name: string
+    matchScore: number
+  }>
   createdAt: string
   updatedAt: string
 }
@@ -47,7 +63,25 @@ export interface Order {
     address: string
     trackingNumber?: string
     carrier?: string
+    container?: string
+    port?: string
+    method?: string
+    expectedArrival?: string
   }
+  timeline?: Array<{
+    stage: 'Order Confirmed' | 'Raw Material' | 'Manufacturing' | 'Quality Check' | 'Packaging' | 'Shipping' | 'Delivered'
+    status: 'Pending' | 'In Progress' | 'Completed' | 'Delayed'
+    progress: number
+    eta?: string
+    notes?: string
+    updatedAt: string
+  }>
+  documents?: Array<{
+    type: string
+    name: string
+    url: string
+    uploadedAt: string
+  }>
   createdAt: string
   updatedAt: string
 }

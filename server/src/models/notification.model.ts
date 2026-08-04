@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 
 export interface INotification extends Document {
   userId: mongoose.Types.ObjectId
-  type: 'New RFQ' | 'Quote Received' | 'Order Updated' | 'AI Recommendation' | 'Product Published'
+  type: 'New RFQ' | 'Quote Received' | 'Order Updated' | 'AI Recommendation' | 'Product Published' | 'Shipment Delayed' | 'Price Changed' | 'Certificate Uploaded' | 'Production Updated' | 'RFQ Accepted'
   title: string
   message: string
   link?: string
@@ -20,7 +20,7 @@ const notificationSchema = new Schema<INotification>(
     },
     type: {
       type: String,
-      enum: ['New RFQ', 'Quote Received', 'Order Updated', 'AI Recommendation', 'Product Published'],
+      enum: ['New RFQ', 'Quote Received', 'Order Updated', 'AI Recommendation', 'Product Published', 'Shipment Delayed', 'Price Changed', 'Certificate Uploaded', 'Production Updated', 'RFQ Accepted'],
       required: true,
     },
     title: {

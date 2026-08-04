@@ -11,7 +11,7 @@ export interface CheckboxProps
 }
 
 /**
- * Accessible styled checkbox with label, description, error, and indeterminate state.
+ * Enterprise Checkbox
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ label, description, error, indeterminate, disabled, className, id: externalId, ...props }, ref) => {
@@ -34,21 +34,21 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             />
             <div
               className={cn(
-                'w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 cursor-pointer',
-                'transition-all duration-[var(--duration-fast)]',
-                'peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-brand-primary)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[var(--surface-1)]',
+                'w-[18px] h-[18px] rounded-[6px] border-2 flex items-center justify-center shrink-0 cursor-pointer bg-white',
+                'transition-all duration-[120ms] ease-out',
+                'peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--focus-ring-color)]',
                 hasError
-                  ? 'border-[var(--color-error)]'
-                  : 'border-[var(--border-color)]',
-                'peer-checked:bg-[var(--color-brand-primary)] peer-checked:border-[var(--color-brand-primary)]',
-                disabled && 'opacity-50 cursor-not-allowed',
+                  ? 'border-[var(--error)]'
+                  : 'border-[var(--border)] hover:border-[#CBD5E1]',
+                'peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)]',
+                disabled && 'opacity-50 cursor-not-allowed bg-[#F1F5F9]',
               )}
               aria-hidden="true"
             >
               {indeterminate ? (
-                <span className="w-2 h-0.5 bg-white rounded-full" />
+                <span className="w-2.5 h-[2px] bg-white rounded-full" />
               ) : (
-                <Check size={10} className="text-white opacity-0 peer-checked:opacity-100" strokeWidth={3} />
+                <Check size={12} className="text-white opacity-0 peer-checked:opacity-100" strokeWidth={3} />
               )}
             </div>
           </div>
@@ -56,17 +56,17 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {(label || description) && (
             <label htmlFor={id} className={cn('flex flex-col cursor-pointer', disabled && 'cursor-not-allowed opacity-50')}>
               {label && (
-                <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>
+                <span className="text-[14px] font-bold text-[var(--heading)]">{label}</span>
               )}
               {description && (
-                <span className="text-xs text-[var(--text-muted)] mt-0.5">{description}</span>
+                <span className="text-[12px] font-medium text-[var(--body)] mt-0.5">{description}</span>
               )}
             </label>
           )}
         </div>
 
         {error && (
-          <p role="alert" className="text-xs text-[var(--color-error)] ml-7 flex items-center gap-1">
+          <p role="alert" className="text-[12px] font-bold text-[var(--error)] ml-[30px] flex items-center gap-1 mt-0.5">
             <span aria-hidden="true">⚠</span>{error}
           </p>
         )}

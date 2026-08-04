@@ -13,7 +13,7 @@ export interface TextareaProps
 }
 
 /**
- * Styled textarea with label, error, hint, and optional character count.
+ * Enterprise Textarea
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
@@ -50,10 +50,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className={cn('flex flex-col gap-1.5', fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-[var(--text-primary)]">
+          <label htmlFor={id} className="text-[13px] font-bold text-[var(--heading)]">
             {label}
             {props.required && (
-              <span className="ml-1 text-[var(--color-error)]" aria-hidden="true">*</span>
+              <span className="ml-1 text-[var(--error)]" aria-hidden="true">*</span>
             )}
           </label>
         )}
@@ -69,34 +69,34 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             [error && errorId, hint && hintId].filter(Boolean).join(' ') || undefined
           }
           className={cn(
-            'w-full min-h-[100px] rounded-lg border bg-[var(--surface-2)]',
-            'text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]',
+            'w-full min-h-[100px] rounded-[14px] border bg-[#F7F8FA]',
+            'text-[14px] font-medium text-[var(--heading)] placeholder:text-[#94A3B8]',
             'px-4 py-3 outline-none',
-            'transition-all duration-[var(--duration-fast)]',
+            'transition-all duration-[120ms] ease-out',
             resizeMap[resize],
             !hasError &&
-              'border-[var(--border-color)] focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/20',
+              'border-[var(--border)] hover:border-[#CBD5E1] focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--focus-ring-color)] focus:shadow-sm',
             hasError &&
-              'border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-2 focus:ring-[var(--color-error)]/20',
-            disabled && 'opacity-50 cursor-not-allowed',
+              'border-[var(--error)] focus:bg-white focus:ring-4 focus:ring-[var(--error)]/20',
+            disabled && 'opacity-50 cursor-not-allowed bg-[#F1F5F9]',
             className,
           )}
           {...props}
         />
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 mt-0.5">
           <div>
             {hint && !error && (
-              <p id={hintId} className="text-xs text-[var(--text-muted)]">{hint}</p>
+              <p id={hintId} className="text-[12px] font-medium text-[var(--body)]">{hint}</p>
             )}
             {error && (
-              <p id={errorId} role="alert" className="text-xs text-[var(--color-error)] flex items-center gap-1">
+              <p id={errorId} role="alert" className="text-[12px] font-bold text-[var(--error)] flex items-center gap-1">
                 <span aria-hidden="true">⚠</span>{error}
               </p>
             )}
           </div>
           {showCount && maxLength && (
-            <p className={cn('text-xs shrink-0 ml-auto', charCount >= maxLength ? 'text-[var(--color-error)]' : 'text-[var(--text-muted)]')}>
+            <p className={cn('text-[11px] font-bold shrink-0 ml-auto tracking-widest', charCount >= maxLength ? 'text-[var(--error)]' : 'text-[#94A3B8]')}>
               {charCount}/{maxLength}
             </p>
           )}

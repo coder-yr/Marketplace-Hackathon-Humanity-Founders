@@ -44,9 +44,9 @@ export function Tabs({
       <div
         role="tablist"
         className={cn(
-          'flex items-center gap-2 overflow-x-auto scrollbar-none',
-          variant === 'underline' && 'border-b border-[var(--border-color)] pb-px',
-          variant === 'segmented' && 'bg-[var(--surface-3)] p-1 rounded-xl'
+          'flex items-center gap-2 overflow-x-auto custom-scrollbar',
+          variant === 'underline' && 'border-b border-[var(--border)] pb-px',
+          variant === 'segmented' && 'bg-[#F1F5F9] p-1.5 rounded-[12px]'
         )}
       >
         {items.map((tab) => {
@@ -61,20 +61,20 @@ export function Tabs({
               disabled={tab.disabled}
               onClick={() => handleTabClick(tab.id, tab.disabled)}
               className={cn(
-                'relative px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 whitespace-nowrap rounded-lg',
+                'relative px-4 py-2 text-[14px] font-bold transition-all duration-[120ms] flex items-center gap-2 whitespace-nowrap rounded-[10px]',
                 tab.disabled && 'opacity-40 cursor-not-allowed',
                 variant === 'underline' &&
                   (isActive
-                    ? 'text-[var(--color-brand-primary)]'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'),
+                    ? 'text-[var(--primary)]'
+                    : 'text-[#64748B] hover:text-[var(--heading)]'),
                 variant === 'pills' &&
                   (isActive
-                    ? 'bg-[var(--color-brand-primary)] text-white shadow-sm'
-                    : 'bg-[var(--surface-2)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-3)]'),
+                    ? 'bg-[var(--primary)] text-white shadow-sm'
+                    : 'bg-[#F1F5F9] text-[#64748B] hover:text-[var(--heading)] hover:bg-[#E2E8F0]'),
                 variant === 'segmented' &&
                   (isActive
-                    ? 'bg-[var(--surface-1)] text-[var(--text-primary)] shadow-sm'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]')
+                    ? 'bg-white text-[var(--heading)] shadow-sm'
+                    : 'text-[#64748B] hover:text-[var(--heading)]')
               )}
             >
               {tab.icon}
@@ -82,10 +82,10 @@ export function Tabs({
               {tab.badge !== undefined && (
                 <span
                   className={cn(
-                    'px-2 py-0.5 text-xs rounded-full font-bold',
+                    'px-2 py-0.5 text-[11px] rounded-full font-bold uppercase tracking-widest',
                     isActive && variant === 'pills'
                       ? 'bg-white/20 text-white'
-                      : 'bg-[var(--surface-4)] text-[var(--text-secondary)]'
+                      : 'bg-[#E2E8F0] text-[var(--heading)]'
                   )}
                 >
                   {tab.badge}
@@ -96,7 +96,7 @@ export function Tabs({
               {variant === 'underline' && isActive && (
                 <motion.div
                   layoutId="activeTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-brand-primary)] rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)] rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}

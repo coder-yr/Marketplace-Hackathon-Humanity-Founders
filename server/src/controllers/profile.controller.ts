@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
 import { profileService } from '../services/profile.service'
-import { buyerProfileSchema, supplierProfileSchema } from '../validators/profile.validator'
 import { AppError } from '../middleware/errorHandler'
 
 export class ProfileController {
@@ -9,7 +8,7 @@ export class ProfileController {
       if (req.user?.role !== 'buyer') {
         throw new AppError('Only buyers can save buyer profiles', 403)
       }
-      const validatedData = buyerProfileSchema.parse(req).body
+      const validatedData = req.body
       const profile = await profileService.saveBuyerDraft(req.user._id.toString(), validatedData)
       
       res.status(200).json({
@@ -26,7 +25,7 @@ export class ProfileController {
       if (req.user?.role !== 'supplier') {
         throw new AppError('Only suppliers can save supplier profiles', 403)
       }
-      const validatedData = supplierProfileSchema.parse(req).body
+      const validatedData = req.body
       const profile = await profileService.saveSupplierDraft(req.user._id.toString(), validatedData)
       
       res.status(200).json({

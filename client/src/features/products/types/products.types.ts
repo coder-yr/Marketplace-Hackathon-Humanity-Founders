@@ -40,6 +40,12 @@ export interface SupplierProfileSummary {
   website?: string
   phone?: string
   email?: string
+  yearsInBusiness?: number
+  aiTrustScore?: number
+  totalOrders?: number
+  responseRate?: number
+  rfqWinRate?: number
+  revenue?: number
 }
 
 export interface Product {

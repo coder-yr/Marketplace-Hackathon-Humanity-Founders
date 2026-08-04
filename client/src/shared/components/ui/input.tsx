@@ -20,13 +20,13 @@ export interface InputProps
 }
 
 const sizeStyles: Record<InputSize, string> = {
-  sm: 'h-8 text-sm px-3',
-  md: 'h-10 text-sm px-4',
-  lg: 'h-12 text-base px-4',
+  sm: 'h-10 text-[13px] px-3',
+  md: 'h-12 text-[14px] px-4',
+  lg: 'h-14 text-[15px] px-5',
 }
 
 /**
- * Text input with label, hint, error, prefix/suffix support, full a11y.
+ * Enterprise Text Input
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -58,11 +58,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={id}
-            className="text-sm font-medium text-[var(--text-primary)]"
+            className="text-[13px] font-bold text-[var(--heading)]"
           >
             {label}
             {props.required && (
-              <span className="ml-1 text-[var(--color-error)]" aria-hidden="true">
+              <span className="ml-1 text-[var(--error)]" aria-hidden="true">
                 *
               </span>
             )}
@@ -73,7 +73,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {/* Prefix */}
           {prefix && (
             <span
-              className="absolute left-3 flex items-center text-[var(--text-muted)] pointer-events-none"
+              className="absolute left-4 flex items-center text-[#94A3B8] pointer-events-none"
               aria-hidden="true"
             >
               {prefix}
@@ -91,23 +91,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             }
             className={cn(
               // Base
-              'w-full rounded-lg border bg-[var(--surface-2)] text-[var(--text-primary)]',
-              'placeholder:text-[var(--text-muted)]',
-              'transition-all duration-[var(--duration-fast)]',
+              'w-full rounded-[14px] border bg-[#F7F8FA] text-[var(--heading)] font-medium',
+              'placeholder:text-[#94A3B8]',
+              'transition-all duration-[120ms] ease-out',
               'outline-none',
               // Size
               sizeStyles[inputSize],
               // Prefix/suffix padding
-              prefix && 'pl-10',
-              suffix && 'pr-10',
+              prefix && 'pl-11',
+              suffix && 'pr-11',
               // Normal border
               !hasError &&
-                'border-[var(--border-color)] focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/20',
+                'border-[var(--border)] hover:border-[#CBD5E1] focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--focus-ring-color)] focus:shadow-sm',
               // Error border
               hasError &&
-                'border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-2 focus:ring-[var(--color-error)]/20',
+                'border-[var(--error)] focus:bg-white focus:ring-4 focus:ring-[var(--error)]/20',
               // Disabled
-              isDisabled && 'opacity-50 cursor-not-allowed',
+              isDisabled && 'opacity-50 cursor-not-allowed bg-[#F1F5F9]',
               className
             )}
             {...props}
@@ -116,7 +116,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {/* Suffix */}
           {suffix && (
             <span
-              className="absolute right-3 flex items-center text-[var(--text-muted)]"
+              className="absolute right-4 flex items-center text-[#94A3B8]"
               aria-hidden="true"
             >
               {suffix}
@@ -126,7 +126,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {/* Hint */}
         {hint && !error && (
-          <p id={hintId} className="text-xs text-[var(--text-muted)]">
+          <p id={hintId} className="text-[12px] font-medium text-[var(--body)] mt-0.5">
             {hint}
           </p>
         )}
@@ -136,7 +136,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <p
             id={errorId}
             role="alert"
-            className="text-xs text-[var(--color-error)] flex items-center gap-1"
+            className="text-[12px] font-bold text-[var(--error)] flex items-center gap-1 mt-0.5"
           >
             <span aria-hidden="true">⚠</span>
             {error}

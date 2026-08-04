@@ -1,5 +1,6 @@
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/input'
+import { ImageUpload } from '@/shared/components/ui/image-upload'
 
 export function SupplierBusinessStep() {
   const { register, formState: { errors } } = useFormContext()
@@ -108,7 +109,7 @@ export function SupplierCategoriesStep() {
 }
 
 export function SupplierBrandingStep() {
-  const { register, formState: { errors } } = useFormContext()
+  const { register, control, formState: { errors } } = useFormContext()
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-bold text-text-primary">Branding & Identity</h2>
@@ -121,11 +122,31 @@ export function SupplierBrandingStep() {
         {...register('description')}
       />
       
-      {/* Cloudinary fallback placeholder */}
-      <div className="border border-dashed border-border-color rounded-lg p-6 flex flex-col items-center justify-center text-text-secondary bg-surface-50 mt-2">
-        <span className="text-2xl mb-2">📸</span>
-        <p className="text-sm font-medium">Image Upload</p>
-        <p className="text-xs mt-1 text-center">Cloudinary integration is pending. Your profile will use beautiful placeholders for now.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <Controller
+          name="logo"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <ImageUpload
+              label="Company Logo"
+              value={value}
+              onChange={onChange}
+              error={errors.logo?.message as string}
+            />
+          )}
+        />
+        <Controller
+          name="banner"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <ImageUpload
+              label="Store Banner"
+              value={value}
+              onChange={onChange}
+              error={errors.banner?.message as string}
+            />
+          )}
+        />
       </div>
     </div>
   )

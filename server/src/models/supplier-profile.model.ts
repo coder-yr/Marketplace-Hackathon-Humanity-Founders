@@ -33,6 +33,14 @@ export interface ISupplierProfile extends Document {
   leadTime?: string
   certifications?: string[] // e.g., ISO9001
   
+  // Supplier Intelligence & Analytics
+  yearsInBusiness?: number
+  aiTrustScore?: number // 0-100
+  totalOrders?: number
+  responseRate?: number // 0-100 percentage
+  rfqWinRate?: number // 0-100 percentage
+  revenue?: number // mock KPI
+  
   profileCompletion: number
   verified: boolean
   createdAt: Date
@@ -78,6 +86,13 @@ const supplierProfileSchema = new Schema<ISupplierProfile>(
     productionCapacity: String,
     leadTime: String,
     certifications: [String],
+
+    yearsInBusiness: Number,
+    aiTrustScore: { type: Number, min: 0, max: 100, default: 85 },
+    totalOrders: { type: Number, default: 0 },
+    responseRate: { type: Number, min: 0, max: 100, default: 95 },
+    rfqWinRate: { type: Number, min: 0, max: 100, default: 60 },
+    revenue: { type: Number, default: 0 },
 
     profileCompletion: {
       type: Number,

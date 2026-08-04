@@ -13,7 +13,7 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const shimmerStyle: React.CSSProperties = {
-  backgroundImage: 'linear-gradient(90deg, var(--surface-3) 25%, var(--surface-4) 50%, var(--surface-3) 75%)',
+  backgroundImage: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
   backgroundSize: '200% 100%',
   animation: 'shimmer 1.8s ease-in-out infinite',
 }
@@ -32,12 +32,12 @@ export function Skeleton({
   ...props
 }: SkeletonProps) {
   const baseClass = cn(
-    'bg-[var(--surface-3)]',
+    'bg-[#F1F5F9]',
     animation === 'pulse' && 'animate-pulse',
     variant === 'circular' && 'rounded-full',
-    variant === 'rounded' && 'rounded-lg',
-    variant === 'text' && 'rounded',
-    variant === 'rectangular' && 'rounded-md',
+    variant === 'rounded' && 'rounded-[12px]',
+    variant === 'text' && 'rounded-[6px]',
+    variant === 'rectangular' && 'rounded-[8px]',
     className,
   )
 
@@ -86,7 +86,7 @@ export function Skeleton({
 
 export function SkeletonCard() {
   return (
-    <div className="surface-card p-5 space-y-4" role="status" aria-busy="true">
+    <div className="bg-white rounded-[24px] border border-[var(--border)] p-6 space-y-4" role="status" aria-busy="true">
       <div className="flex items-center gap-3">
         <Skeleton variant="circular" width={40} height={40} />
         <div className="flex-1 space-y-2">
@@ -103,7 +103,7 @@ export function SkeletonCard() {
 
 export function SkeletonTableRow({ cols = 4 }: { cols?: number }) {
   return (
-    <div className="flex items-center gap-4 py-3 px-4 border-b border-[var(--border-color)]">
+    <div className="flex items-center gap-4 py-3 px-4 border-b border-[var(--border)]">
       {Array.from({ length: cols }).map((_, i) => (
         <Skeleton key={i} height={14} className="flex-1" />
       ))}

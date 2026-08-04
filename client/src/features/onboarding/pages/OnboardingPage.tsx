@@ -8,6 +8,7 @@ import { ProgressBar } from '@/shared/components/feedback/progress-bar'
 import { Button } from '@/shared/components/ui/button'
 import { toast } from 'sonner'
 import debounce from 'lodash.debounce'
+import { Hexagon } from 'lucide-react'
 import {
   BuyerBusinessStep,
   BuyerIndustryStep,
@@ -130,27 +131,34 @@ export function OnboardingPage() {
   const isLastStep = currentStepIndex === steps.length - 1
 
   return (
-    <div className="min-h-screen bg-surface-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-2xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">Complete Your Profile</h1>
-          <p className="text-text-secondary">
-            {isBuyer ? 'Tell us what you are looking for.' : 'Showcase your capabilities to buyers.'}
+    <div className="min-h-screen bg-[#F7F8FA] flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      
+      {/* Brand Header */}
+      <div className="flex items-center gap-2 mb-12">
+        <Hexagon className="w-8 h-8 text-[var(--primary)] fill-[var(--primary)]/20" />
+        <span className="font-display font-bold text-[24px] text-[var(--heading)]">TextileHub <span className="text-[var(--primary)]">Enterprise</span></span>
+      </div>
+
+      <div className="w-full max-w-3xl">
+        <div className="mb-8 text-center">
+          <h1 className="text-[32px] md:text-[40px] font-display font-bold text-[var(--heading)] mb-3 tracking-tight">Complete Your Enterprise Profile</h1>
+          <p className="text-[16px] text-[var(--body)] font-medium max-w-xl mx-auto">
+            {isBuyer ? 'Configure your procurement preferences to get personalized sourcing recommendations.' : 'Showcase your manufacturing capabilities to global enterprise buyers.'}
           </p>
         </div>
 
         {/* Step Progress UI */}
-        <div className="mb-8 flex flex-col gap-4">
-          <ProgressBar value={progress} size="lg" variant="brand" />
-          <div className="flex justify-between text-sm text-text-secondary font-medium">
+        <div className="mb-10 flex flex-col gap-4 max-w-2xl mx-auto">
+          <ProgressBar value={progress} size="lg" variant="brand" className="h-2 rounded-full bg-[var(--border)] [&>div]:bg-[var(--primary)]" />
+          <div className="flex justify-between text-[12px] text-[#94A3B8] font-bold uppercase tracking-widest">
             {steps.map((step, idx) => (
               <span
                 key={step.id}
                 className={
                   idx === currentStepIndex
-                    ? 'text-brand-primary'
+                    ? 'text-[var(--primary)]'
                     : idx < currentStepIndex
-                    ? 'text-success'
+                    ? 'text-[var(--success)]'
                     : 'hidden sm:inline-block'
                 }
               >
@@ -161,7 +169,7 @@ export function OnboardingPage() {
         </div>
 
         <FormProvider {...methods}>
-          <div className="bg-surface-1 rounded-2xl shadow-sm border border-border-color p-6 md:p-8 overflow-hidden">
+          <div className="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[var(--border)] p-8 md:p-10 overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStepIndex}
@@ -174,28 +182,33 @@ export function OnboardingPage() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-8 flex justify-between items-center border-t border-border-color pt-6">
+            <div className="mt-10 flex justify-between items-center border-t border-[var(--border)] pt-8">
               <Button
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStepIndex === 0 || isSubmitting}
+                className="border-[var(--border)] text-[var(--body)] hover:text-[var(--heading)] font-bold h-12 px-6 rounded-[12px]"
               >
                 Back
               </Button>
               
               <div className="flex items-center gap-4">
-                <span className="text-xs text-text-secondary hidden sm:inline-block">
-                  Auto-saved
+                <span className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-widest hidden sm:inline-block">
+                  Auto-saving...
                 </span>
                 {isLastStep ? (
                   <Button
                     onClick={handleComplete}
                     loading={isSubmitting}
+                    className="bg-[var(--heading)] hover:bg-[#1E293B] text-white font-bold h-12 px-8 rounded-[12px] shadow-sm"
                   >
                     Complete Profile
                   </Button>
                 ) : (
-                  <Button onClick={saveAndNext}>
+                  <Button 
+                    onClick={saveAndNext}
+                    className="bg-[var(--primary)] hover:bg-[#0052CC] text-white font-bold h-12 px-8 rounded-[12px] shadow-sm"
+                  >
                     Next Step
                   </Button>
                 )}

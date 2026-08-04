@@ -16,7 +16,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image Stage */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 border border-border-color shadow-sm group">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-[#F8FAFC] border border-[#E2E8F0] shadow-none group">
         <AnimatePresence mode="wait">
           <motion.img
             key={selectedImage}
@@ -26,7 +26,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
           />
         </AnimatePresence>
       </div>
@@ -38,10 +38,10 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
             <button
               key={idx}
               onClick={() => setSelectedImage(img)}
-              className={`relative h-20 w-24 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 focus:outline-none ${
+              className={`relative h-20 w-24 shrink-0 overflow-hidden rounded-[12px] border-2 transition-all duration-200 focus:outline-none ${
                 selectedImage === img
-                  ? 'border-brand-primary ring-2 ring-brand-primary/20 scale-105'
-                  : 'border-border-color opacity-70 hover:opacity-100 hover:border-brand-primary/40'
+                  ? 'border-[#0066FF] ring-2 ring-[#0066FF]/20 scale-[1.02]'
+                  : 'border-[#E2E8F0] opacity-70 hover:opacity-100 hover:border-[#0066FF]/40'
               }`}
             >
               <img src={img} alt={`${title} thumb ${idx + 1}`} className="h-full w-full object-cover" />

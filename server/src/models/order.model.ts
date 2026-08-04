@@ -12,7 +12,25 @@ export interface IOrder extends Document {
     address: string
     trackingNumber?: string
     carrier?: string
+    container?: string
+    port?: string
+    method?: string
+    expectedArrival?: Date
   }
+  timeline?: Array<{
+    stage: 'Order Confirmed' | 'Raw Material' | 'Manufacturing' | 'Quality Check' | 'Packaging' | 'Shipping' | 'Delivered'
+    status: 'Pending' | 'In Progress' | 'Completed' | 'Delayed'
+    progress: number
+    eta?: Date
+    notes?: string
+    updatedAt: Date
+  }>
+  documents?: Array<{
+    type: string
+    name: string
+    url: string
+    uploadedAt: Date
+  }>
   createdAt: Date
   updatedAt: Date
 }
@@ -56,7 +74,29 @@ const orderSchema = new Schema<IOrder>(
       address: String,
       trackingNumber: String,
       carrier: String,
+      container: String,
+      port: String,
+      method: String,
+      expectedArrival: Date,
     },
+    timeline: [
+      {
+        stage: { type: String, enum: ['Order Confirmed', 'Raw Material', 'Manufacturing', 'Quality Check', 'Packaging', 'Shipping', 'Delivered'] },
+        status: { type: String, enum: ['Pending', 'In Progress', 'Completed', 'Delayed'], default: 'Pending' },
+        progress: { type: Number, default: 0 },
+        eta: Date,
+        notes: String,
+        updatedAt: { type: Date, default: Date.now },
+      },
+    ],
+    documents: [
+      {
+        type: { type: String },
+        name: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

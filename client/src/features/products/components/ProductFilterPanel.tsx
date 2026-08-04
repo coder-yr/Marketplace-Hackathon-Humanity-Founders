@@ -46,19 +46,19 @@ export function ProductFilterPanel({
   )
 
   return (
-    <div className="bg-surface-1 border border-border-color rounded-2xl p-5 flex flex-col gap-6 shadow-xs">
+    <div className="bg-white rounded-[24px] flex flex-col gap-8 shadow-none h-full">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border-color/60 pb-4">
-        <div className="flex items-center gap-2 text-text-primary font-semibold text-base">
-          <Filter className="w-4 h-4 text-brand-primary" />
-          <span>Filter Products</span>
+      <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="flex items-center gap-2 text-[#0A2540] font-bold text-[18px]">
+          <Filter className="w-5 h-5 text-[#0066FF]" />
+          <span>Filters</span>
         </div>
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onReset}
-            className="text-xs text-text-secondary hover:text-brand-primary flex items-center gap-1.5 h-8 px-2"
+            className="text-[13px] text-[#64748B] hover:text-[#0A2540] hover:bg-[#F8FAFC] flex items-center gap-1.5 h-8 px-2"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
@@ -68,11 +68,11 @@ export function ProductFilterPanel({
 
       {/* Search Input */}
       <div>
-        <label className="block text-xs font-semibold text-text-primary uppercase tracking-wider mb-2">
+        <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mb-3">
           Keyword Search
         </label>
         <SearchInput
-          placeholder="Search fabrics, tags, GSM..."
+          placeholder="Search fabrics, tags..."
           value={filters.search || ''}
           onChange={(e) => handleSearchChange(e.target.value)}
           onClear={() => handleSearchChange('')}
@@ -81,7 +81,7 @@ export function ProductFilterPanel({
 
       {/* Categories */}
       <div>
-        <label className="block text-xs font-semibold text-text-primary uppercase tracking-wider mb-2.5">
+        <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mb-3">
           Categories
         </label>
         <div className="flex flex-wrap gap-2">
@@ -91,10 +91,10 @@ export function ProductFilterPanel({
               <button
                 key={cat._id}
                 onClick={() => handleCategoryChange(cat.slug)}
-                className={`text-xs px-3 py-1.5 rounded-xl border font-medium transition-all duration-200 ${
+                className={`text-[12px] px-3 py-1.5 rounded-[8px] font-bold transition-all duration-200 border ${
                   isSelected
-                    ? 'bg-brand-primary text-white border-brand-primary shadow-xs'
-                    : 'bg-surface-2 text-text-secondary border-border-color hover:border-brand-primary/40 hover:text-text-primary'
+                    ? 'bg-[#0066FF] text-white border-[#0066FF]'
+                    : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0066FF]/30 hover:text-[#0A2540]'
                 }`}
               >
                 {cat.name}
@@ -106,7 +106,7 @@ export function ProductFilterPanel({
 
       {/* Fabric Types */}
       <div>
-        <label className="block text-xs font-semibold text-text-primary uppercase tracking-wider mb-2.5">
+        <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mb-3">
           Fabric Type
         </label>
         <div className="flex flex-wrap gap-2">
@@ -116,10 +116,10 @@ export function ProductFilterPanel({
               <button
                 key={fabric}
                 onClick={() => handleFabricChange(fabric)}
-                className={`text-xs px-3 py-1.5 rounded-xl border font-medium transition-all duration-200 ${
+                className={`text-[12px] px-3 py-1.5 rounded-[8px] font-bold transition-all duration-200 border ${
                   isSelected
-                    ? 'bg-brand-primary text-white border-brand-primary shadow-xs'
-                    : 'bg-surface-2 text-text-secondary border-border-color hover:border-brand-primary/40 hover:text-text-primary'
+                    ? 'bg-[#0066FF] text-white border-[#0066FF]'
+                    : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0066FF]/30 hover:text-[#0A2540]'
                 }`}
               >
                 {fabric}
@@ -131,11 +131,11 @@ export function ProductFilterPanel({
 
       {/* Max MOQ Filter */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-xs font-semibold text-text-primary uppercase tracking-wider">
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">
             Max MOQ Requirement
           </label>
-          <span className="text-xs font-bold text-brand-primary">
+          <span className="text-[10px] font-bold text-[#0066FF] bg-[#0066FF]/10 px-2 py-0.5 rounded-[4px]">
             {filters.maxMoq ? `< ${filters.maxMoq} meters` : 'Any'}
           </span>
         </div>
@@ -144,10 +144,10 @@ export function ProductFilterPanel({
             <button
               key={val}
               onClick={() => handleMoqChange(filters.maxMoq === val ? undefined : val)}
-              className={`text-xs py-1.5 rounded-lg border font-medium transition-all ${
+              className={`text-[11px] py-1.5 rounded-[8px] border font-bold transition-all ${
                 filters.maxMoq === val
-                  ? 'bg-brand-primary text-white border-brand-primary'
-                  : 'bg-surface-2 text-text-secondary border-border-color hover:border-brand-primary/40'
+                  ? 'bg-[#0066FF] text-white border-[#0066FF]'
+                  : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0066FF]/30 hover:text-[#0A2540]'
               }`}
             >
               ≤ {val}m
@@ -158,26 +158,26 @@ export function ProductFilterPanel({
 
       {/* Availability / Stock Status */}
       <div>
-        <label className="block text-xs font-semibold text-text-primary uppercase tracking-wider mb-2.5">
+        <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mb-3">
           Stock Status
         </label>
         <div className="flex gap-2">
           <button
             onClick={() => handleStockStatusChange('in_stock')}
-            className={`flex-1 text-xs py-2 rounded-xl border font-medium transition-all ${
+            className={`flex-1 text-[12px] py-2 rounded-[10px] border font-bold transition-all ${
               filters.stockStatus === 'in_stock'
-                ? 'bg-brand-primary text-white border-brand-primary'
-                : 'bg-surface-2 text-text-secondary border-border-color hover:border-brand-primary/40'
+                ? 'bg-[#0A2540] text-white border-[#0A2540]'
+                : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0A2540]/30 hover:text-[#0A2540]'
             }`}
           >
             In Stock
           </button>
           <button
             onClick={() => handleStockStatusChange('made_to_order')}
-            className={`flex-1 text-xs py-2 rounded-xl border font-medium transition-all ${
+            className={`flex-1 text-[12px] py-2 rounded-[10px] border font-bold transition-all ${
               filters.stockStatus === 'made_to_order'
-                ? 'bg-brand-primary text-white border-brand-primary'
-                : 'bg-surface-2 text-text-secondary border-border-color hover:border-brand-primary/40'
+                ? 'bg-[#0A2540] text-white border-[#0A2540]'
+                : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0A2540]/30 hover:text-[#0A2540]'
             }`}
           >
             Made to Order

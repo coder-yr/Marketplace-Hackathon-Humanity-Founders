@@ -9,6 +9,7 @@ const HomePage = lazy(() => import('@/features/home/pages/HomePage').then(module
 const MarketplacePage = lazy(() => import('@/features/products/pages/MarketplacePage').then(module => ({ default: module.MarketplacePage })))
 const CategoriesPage = lazy(() => import('@/features/products/pages/CategoriesPage').then(module => ({ default: module.CategoriesPage })))
 const ProductDetailPage = lazy(() => import('@/features/products/pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })))
+const SupplierProfilePage = lazy(() => import('@/features/products/pages/SupplierProfilePage').then(module => ({ default: module.SupplierProfilePage })))
 
 const DevPage = lazy(() => import('@/features/dev/pages/DevPage').then(module => ({ default: module.DevPage })))
 const NotFoundPage = lazy(() => import('@/shared/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
@@ -32,6 +33,7 @@ export function AppRouter() {
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
+          <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
         </Route>
 
         {/* Guest Only Routes (Login, Register) */}

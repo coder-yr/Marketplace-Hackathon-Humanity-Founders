@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
-export type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'outline'
+export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'outline'
 export type BadgeSize = 'sm' | 'md' | 'lg'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -19,35 +19,31 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default:   'bg-[var(--surface-3)] text-[var(--text-secondary)] border-transparent',
-  primary:   'bg-[var(--color-brand-primary)]/15 text-[var(--color-brand-primary)] border-[var(--color-brand-primary)]/20',
-  secondary: 'bg-[var(--color-brand-secondary)]/15 text-[var(--color-brand-secondary)] border-[var(--color-brand-secondary)]/20',
-  success:   'bg-[var(--color-success)]/15 text-[var(--color-success)] border-[var(--color-success)]/20',
-  warning:   'bg-[var(--color-warning)]/15 text-[var(--color-warning)] border-[var(--color-warning)]/20',
-  error:     'bg-[var(--color-error)]/15 text-[var(--color-error)] border-[var(--color-error)]/20',
-  info:      'bg-[var(--color-info)]/15 text-[var(--color-info)] border-[var(--color-info)]/20',
-  outline:   'bg-transparent text-[var(--text-secondary)] border-[var(--border-color)]',
+  default: 'bg-[#F1F5F9] text-[var(--body)] border-transparent',
+  primary: 'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20',
+  success: 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20',
+  warning: 'bg-[var(--warning)]/10 text-[var(--warning)] border-[var(--warning)]/20',
+  error:   'bg-[var(--error)]/10 text-[var(--error)] border-[var(--error)]/20',
+  outline: 'bg-transparent text-[var(--body)] border-[var(--border)]',
 }
 
 const dotColors: Record<BadgeVariant, string> = {
-  default:   'bg-[var(--text-muted)]',
-  primary:   'bg-[var(--color-brand-primary)]',
-  secondary: 'bg-[var(--color-brand-secondary)]',
-  success:   'bg-[var(--color-success)]',
-  warning:   'bg-[var(--color-warning)]',
-  error:     'bg-[var(--color-error)]',
-  info:      'bg-[var(--color-info)]',
-  outline:   'bg-[var(--text-muted)]',
+  default: 'bg-[var(--body)]',
+  primary: 'bg-[var(--primary)]',
+  success: 'bg-[var(--success)]',
+  warning: 'bg-[var(--warning)]',
+  error:   'bg-[var(--error)]',
+  outline: 'bg-[var(--body)]',
 }
 
 const sizeStyles: Record<BadgeSize, string> = {
-  sm: 'text-xs px-1.5 py-0.5 gap-1',
-  md: 'text-xs px-2 py-1 gap-1.5',
-  lg: 'text-sm px-2.5 py-1 gap-1.5',
+  sm: 'text-[9px] px-1.5 py-0.5 gap-1',
+  md: 'text-[10px] px-2 py-0.5 gap-1.5',
+  lg: 'text-[11px] px-3 py-1 gap-1.5',
 }
 
 /**
- * Badge / tag with 8 variants, 3 sizes, dot, icon, and removable variants.
+ * Enterprise Badge / Tag
  */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   (
@@ -68,8 +64,8 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={cn(
-          'inline-flex items-center font-medium border',
-          'transition-colors duration-[var(--duration-fast)]',
+          'inline-flex items-center font-bold uppercase tracking-widest border',
+          'transition-colors duration-[120ms]',
           rounded ? 'rounded-full' : 'rounded-md',
           variantStyles[variant],
           sizeStyles[size],
@@ -86,7 +82,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
           <button
             type="button"
             onClick={onRemove}
-            className="shrink-0 ml-0.5 rounded-full hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current"
+            className="shrink-0 ml-0.5 rounded-full hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--primary)]"
             aria-label="Remove"
           >
             <X size={12} strokeWidth={2.5} />

@@ -69,19 +69,19 @@ export const RegisterPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[var(--surface-1)]">
+    <div className="min-h-screen flex bg-[#F7F8FA]">
       {/* Left side - Form */}
       <div className="flex-1 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-24">
         <div className="w-full max-w-md mx-auto">
           <div className="mb-10">
-            <h2 className="text-3xl font-display font-bold text-[var(--text-primary)] capitalize">
+            <h2 className="text-3xl font-display font-bold text-[var(--heading)] capitalize">
               Create {role} account
             </h2>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            <p className="mt-2 text-sm text-[var(--body)] font-medium">
               Already have an account?{' '}
               <button
                 onClick={() => navigate('/login')}
-                className="font-semibold text-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary-hover)] transition-colors"
+                className="font-bold text-[var(--primary)] hover:text-[#0052CC] transition-colors"
               >
                 Sign in here
               </button>
@@ -94,7 +94,7 @@ export const RegisterPage: React.FC = () => {
               autoComplete="name"
               error={errors.fullName?.message}
               {...register('fullName')}
-              className="bg-[var(--surface-2)] border-[var(--border-color)] focus:border-[var(--color-brand-primary)]"
+              className="bg-white border-[var(--border)] focus:border-[var(--primary)]"
             />
 
             <Input
@@ -103,7 +103,7 @@ export const RegisterPage: React.FC = () => {
               autoComplete="email"
               error={errors.email?.message}
               {...register('email')}
-              className="bg-[var(--surface-2)] border-[var(--border-color)] focus:border-[var(--color-brand-primary)]"
+              className="bg-white border-[var(--border)] focus:border-[var(--primary)]"
             />
 
             <PasswordInput
@@ -111,7 +111,7 @@ export const RegisterPage: React.FC = () => {
               autoComplete="new-password"
               error={errors.password?.message}
               {...register('password')}
-              className="bg-[var(--surface-2)] border-[var(--border-color)] focus:border-[var(--color-brand-primary)]"
+              className="bg-white border-[var(--border)] focus:border-[var(--primary)]"
             />
 
             <PasswordInput
@@ -119,7 +119,7 @@ export const RegisterPage: React.FC = () => {
               autoComplete="new-password"
               error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
-              className="bg-[var(--surface-2)] border-[var(--border-color)] focus:border-[var(--color-brand-primary)]"
+              className="bg-white border-[var(--border)] focus:border-[var(--primary)]"
             />
 
             <Button
@@ -127,7 +127,7 @@ export const RegisterPage: React.FC = () => {
               fullWidth
               size="lg"
               loading={isLoading}
-              className="gradient-brand text-white shadow-lg shadow-[var(--color-brand-primary)]/20 hover:shadow-xl hover:shadow-[var(--color-brand-primary)]/30 hover:-translate-y-0.5 transition-all text-base font-semibold rounded-xl mt-6"
+              className="bg-[var(--heading)] text-white hover:bg-[var(--primary)] hover:-translate-y-0.5 transition-all text-[15px] font-bold rounded-[12px] h-12 mt-6"
             >
               Create Account
             </Button>
@@ -136,36 +136,36 @@ export const RegisterPage: React.FC = () => {
       </div>
 
       {/* Right side - Image & Value Prop */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[var(--surface-2)]">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-white">
         <img
           src="https://images.unsplash.com/photo-1596484552834-6a58f850d0d7?auto=format&fit=crop&w=1200&q=80"
           alt="Textile Rolls"
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-1)] via-[var(--surface-1)]/80 to-transparent" />
-        <div className="absolute inset-0 bg-[var(--color-brand-primary)]/10 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F7F8FA] via-[#F7F8FA]/80 to-transparent" />
+        <div className="absolute inset-0 bg-[var(--primary)]/10 mix-blend-multiply" />
         
         {/* Content */}
         <div className="relative z-10 p-12 flex flex-col justify-end h-full max-w-2xl text-right ml-auto">
           <div className="flex justify-end mb-6">
             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <Store className="w-6 h-6 text-[var(--color-brand-primary)]" />
+              <Store className="w-6 h-6 text-[var(--primary)]" />
             </div>
           </div>
-          <h2 className="text-4xl font-display font-extrabold text-[var(--text-primary)] tracking-tight leading-tight mb-4">
+          <h2 className="text-4xl font-display font-extrabold text-[var(--heading)] tracking-tight leading-tight mb-4">
             Join thousands of global <br /> textile professionals.
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] mb-8 ml-auto max-w-md">
+          <p className="text-lg text-[var(--body)] mb-8 ml-auto max-w-md font-medium">
             Whether you are sourcing fabrics or selling them, TextileHub provides the enterprise tools you need to succeed.
           </p>
           <div className="flex gap-6 justify-end">
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-              <ShieldCheck className="w-5 h-5 text-[var(--color-brand-primary)]" />
+            <div className="flex items-center gap-2 text-sm font-bold text-[var(--heading)]">
+              <ShieldCheck className="w-5 h-5 text-[var(--primary)]" />
               Secure Escrow
             </div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-              <Zap className="w-5 h-5 text-[var(--color-brand-primary)]" />
+            <div className="flex items-center gap-2 text-sm font-bold text-[var(--heading)]">
+              <Zap className="w-5 h-5 text-[var(--primary)]" />
               AI Copilot
             </div>
           </div>

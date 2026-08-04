@@ -15,7 +15,7 @@ const sizeStyles = {
 }
 
 /**
- * Toggle switch with label, description, size variants, full keyboard accessibility.
+ * Enterprise Toggle Switch
  */
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   ({ label, description, size = 'md', disabled, className, id: externalId, ...props }, ref) => {
@@ -39,10 +39,10 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           <div
             className={cn(
               sz.track,
-              'rounded-full border border-[var(--border-color)] bg-[var(--surface-3)] cursor-pointer',
-              'transition-all duration-[var(--duration-normal)]',
-              'peer-checked:bg-[var(--color-brand-primary)] peer-checked:border-[var(--color-brand-primary)]',
-              'peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-brand-primary)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[var(--surface-1)]',
+              'rounded-full border border-[var(--border)] bg-[#F1F5F9] cursor-pointer',
+              'transition-all duration-[120ms]',
+              'peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)]',
+              'peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--focus-ring-color)]',
               disabled && 'opacity-50 cursor-not-allowed',
             )}
             aria-hidden="true"
@@ -51,8 +51,8 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             <div
               className={cn(
                 sz.thumb,
-                'rounded-full bg-[var(--text-muted)] absolute top-1/2 left-0.5 -translate-y-1/2',
-                'transition-all duration-[var(--duration-normal)] shadow-sm',
+                'rounded-full bg-white absolute top-1/2 left-0.5 -translate-y-1/2',
+                'transition-all duration-[120ms] shadow-sm',
                 'peer-checked:bg-white peer-checked:' + sz.translate,
               )}
             />
@@ -64,8 +64,8 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             htmlFor={id}
             className={cn('flex flex-col cursor-pointer', disabled && 'cursor-not-allowed opacity-50')}
           >
-            {label && <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>}
-            {description && <span className="text-xs text-[var(--text-muted)] mt-0.5">{description}</span>}
+            {label && <span className="text-[14px] font-bold text-[var(--heading)]">{label}</span>}
+            {description && <span className="text-[12px] font-medium text-[var(--body)] mt-0.5">{description}</span>}
           </label>
         )}
       </div>

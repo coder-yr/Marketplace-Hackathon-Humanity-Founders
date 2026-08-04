@@ -20,13 +20,13 @@ export interface SelectProps
 }
 
 const sizeStyles = {
-  sm: 'h-8 text-sm pl-3 pr-9',
-  md: 'h-10 text-sm pl-4 pr-10',
-  lg: 'h-12 text-base pl-4 pr-10',
+  sm: 'h-10 text-[13px] pl-3 pr-9',
+  md: 'h-12 text-[14px] pl-4 pr-10',
+  lg: 'h-14 text-[15px] pl-5 pr-10',
 }
 
 /**
- * Styled native <select> with label, error, ARIA support.
+ * Enterprise Native Select
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
@@ -53,10 +53,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className={cn('flex flex-col gap-1.5', fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-[var(--text-primary)]">
+          <label htmlFor={id} className="text-[13px] font-bold text-[var(--heading)]">
             {label}
             {props.required && (
-              <span className="ml-1 text-[var(--color-error)]" aria-hidden="true">*</span>
+              <span className="ml-1 text-[var(--error)]" aria-hidden="true">*</span>
             )}
           </label>
         )}
@@ -69,15 +69,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={hasError}
             aria-describedby={error ? errorId : undefined}
             className={cn(
-              'w-full appearance-none rounded-lg border bg-[var(--surface-2)]',
-              'text-[var(--text-primary)] outline-none cursor-pointer',
-              'transition-all duration-[var(--duration-fast)]',
+              'w-full appearance-none rounded-[14px] border bg-[#F7F8FA]',
+              'text-[var(--heading)] font-medium outline-none cursor-pointer',
+              'transition-all duration-[120ms] ease-out',
               sizeStyles[selectSize],
               !hasError &&
-                'border-[var(--border-color)] focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/20',
+                'border-[var(--border)] hover:border-[#CBD5E1] focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--focus-ring-color)] focus:shadow-sm',
               hasError &&
-                'border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-2 focus:ring-[var(--color-error)]/20',
-              disabled && 'opacity-50 cursor-not-allowed',
+                'border-[var(--error)] focus:bg-white focus:ring-4 focus:ring-[var(--error)]/20',
+              disabled && 'opacity-50 cursor-not-allowed bg-[#F1F5F9]',
               className,
             )}
             {...props}
@@ -95,17 +95,17 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
 
           <ChevronDown
-            className="absolute right-3 text-[var(--text-muted)] pointer-events-none shrink-0"
+            className="absolute right-4 text-[#94A3B8] pointer-events-none shrink-0"
             size={16}
             aria-hidden="true"
           />
         </div>
 
         {hint && !error && (
-          <p className="text-xs text-[var(--text-muted)]">{hint}</p>
+          <p className="text-[12px] font-medium text-[var(--body)] mt-0.5">{hint}</p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="text-xs text-[var(--color-error)] flex items-center gap-1">
+          <p id={errorId} role="alert" className="text-[12px] font-bold text-[var(--error)] flex items-center gap-1 mt-0.5">
             <span aria-hidden="true">⚠</span>{error}
           </p>
         )}

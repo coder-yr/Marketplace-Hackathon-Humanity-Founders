@@ -72,7 +72,7 @@ export function Modal({
       {isOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center p-4"
-          style={{ zIndex: 'var(--z-modal)' }}
+          style={{ zIndex: 100 }}
           role="dialog"
           aria-modal="true"
           aria-labelledby={title ? 'modal-title' : undefined}
@@ -80,7 +80,7 @@ export function Modal({
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 overlay-bg"
+            className="absolute inset-0 bg-[#0A2540]/60 backdrop-blur-sm"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -92,8 +92,8 @@ export function Modal({
           {/* Dialog */}
           <motion.div
             className={cn(
-              'relative w-full rounded-2xl bg-[var(--surface-2)] shadow-2xl',
-              'border border-[var(--border-color)]',
+              'relative w-full rounded-[24px] bg-white shadow-2xl',
+              'border border-[var(--border)]',
               'flex flex-col max-h-[90vh]',
               sizeMap[size],
               className,
@@ -108,12 +108,12 @@ export function Modal({
               <div className="flex items-start justify-between gap-4 p-6 pb-0">
                 <div>
                   {title && (
-                    <h2 id="modal-title" className="text-lg font-display font-bold text-[var(--text-primary)]">
+                    <h2 id="modal-title" className="text-[20px] font-display font-bold text-[var(--heading)]">
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <p id="modal-description" className="text-sm text-[var(--text-secondary)] mt-1">
+                    <p id="modal-description" className="text-[14px] text-[var(--body)] font-medium mt-1">
                       {description}
                     </p>
                   )}
@@ -123,10 +123,10 @@ export function Modal({
                     type="button"
                     onClick={onClose}
                     className={cn(
-                      'shrink-0 p-1.5 rounded-lg text-[var(--text-muted)]',
-                      'hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]',
+                      'shrink-0 p-1.5 rounded-[12px] text-[#94A3B8]',
+                      'hover:bg-[#F1F5F9] hover:text-[var(--heading)]',
                       'transition-colors duration-[var(--duration-fast)]',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)]',
                     )}
                     aria-label="Close modal"
                   >
@@ -143,7 +143,7 @@ export function Modal({
 
             {/* Footer */}
             {footer && (
-              <div className="flex items-center justify-end gap-3 p-6 pt-0 border-t border-[var(--border-color)] mt-0">
+              <div className="flex items-center justify-end gap-3 p-6 pt-0 border-t border-[var(--border)] mt-0">
                 {footer}
               </div>
             )}
