@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/features/auth/store/auth.store'
+import { useCartStore } from '@/features/cart/store/cart.store'
 import { Container } from '@/shared/components/layout/container'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
@@ -12,7 +14,7 @@ import { Product, SupplierProfileSummary } from '../types/products.types'
 import { AiQuoteGenerator } from '@/features/ai/components/AiQuoteGenerator'
 import {
   ShieldCheck, Clock, Layers, Bookmark, Building2, MapPin, Award, 
-  ChevronRight, Sparkles, Star, Shuffle, Download, Factory, AlertCircle, FileText, Box
+  ChevronRight, Sparkles, Star, Shuffle, Download, Factory, AlertCircle, FileText, Box, ShoppingCart, CheckCircle2
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
@@ -25,6 +27,12 @@ export function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  const { isAuthenticated, user } = useAuthStore()
+  const { addToCart } = useCartStore()
+
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1)
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
@@ -40,6 +48,13 @@ export function ProductDetailPage() {
           setProduct(res.data.product)
           setSupplierProfile(res.data.supplierProfile || null)
           setRelatedProducts(res.data.relatedProducts || [])
+          
+          if (res.data.product.variants && res.data.product.variants.length > 0) {
+            setSelectedColor(res.data.product.variants[0].color)
+          }
+          if (res.data.product.moq) {
+            setSelectedQuantity(res.data.product.moq.value)
+          }
         }
         setIsLoading(false)
       })
@@ -48,6 +63,44 @@ export function ProductDetailPage() {
         setIsLoading(false)
       })
   }, [idOrSlug])
+
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      toast.error('Please login as a buyer to add items to your cart')
+      navigate('/login')
+      return
+    }
+    if (user?.role !== 'buyer') {
+      toast.error('Only buyers can add items to cart')
+      return
+    }
+
+    if (!product) return
+
+    setIsAddingToCart(true)
+    try {
+      await addToCart({
+        productId: product._id,
+        supplierId: typeof product.supplierId === 'object' ? product.supplierId._id : product.supplierId,
+        quantity: selectedQuantity,
+        color: selectedColor || undefined,
+        price: product.priceRange.min
+      })
+      toast.success(
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-white" />
+          Added to Cart
+        </div>,
+        {
+          style: { background: 'var(--success)', color: 'white', border: 'none' }
+        }
+      )
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add to cart')
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
 
   const handleToggleBookmark = () => {
     setIsBookmarked(!isBookmarked)
@@ -256,7 +309,7 @@ export function ProductDetailPage() {
                 </div>
 
                 {/* Availability / Logistics block */}
-                <div className="space-y-3 mb-8">
+                <div className="space-y-3 mb-6">
                   <div className="flex justify-between items-center bg-[#F8FAFC] p-3.5 rounded-[12px] border border-[var(--border)]">
                     <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-[var(--body)]">
                       <Layers className="w-4 h-4 text-[var(--primary)]" /> MOQ
@@ -279,14 +332,52 @@ export function ProductDetailPage() {
                   </div>
                 </div>
 
+                {/* Variants (Colors) */}
+                {product.variants && product.variants.length > 0 && (
+                  <div className="mb-6">
+                    <div className="text-[12px] font-bold uppercase tracking-widest text-[var(--heading)] mb-3">Available Colors</div>
+                    <div className="flex flex-wrap gap-2">
+                      {product.variants.map((v) => (
+                        <button
+                          key={v.color}
+                          onClick={() => setSelectedColor(v.color)}
+                          className={`px-4 py-2 rounded-[8px] text-[13px] font-bold transition-all border ${
+                            selectedColor === v.color 
+                              ? 'bg-[var(--heading)] text-white border-[var(--heading)] shadow-sm' 
+                              : 'bg-white text-[var(--heading)] border-[var(--border)] hover:bg-[#F8FAFC]'
+                          }`}
+                        >
+                          {v.color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Primary Actions Stack */}
                 <div className="flex flex-col gap-3 mb-6">
                   <Button
                     size="lg"
-                    className="w-full h-14 bg-[var(--heading)] hover:bg-[var(--primary)] text-white text-[15px] shadow-sm font-bold transition-transform hover:-translate-y-0.5 rounded-[12px]"
+                    className="w-full h-14 bg-[var(--primary)] hover:bg-[#0052CC] text-white text-[15px] shadow-sm font-bold transition-transform hover:-translate-y-0.5 rounded-[12px]"
                     onClick={() => setIsQuoteModalOpen(true)}
                   >
-                    Request RFQ <ChevronRight className="w-4 h-4 ml-1" />
+                    Request RFQ
+                  </Button>
+                  
+                  <Button
+                    size="lg"
+                    className="w-full h-14 bg-white border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[#F8FAFC] text-[15px] shadow-sm font-bold transition-transform hover:-translate-y-0.5 rounded-[12px]"
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                  >
+                    {isAddingToCart ? (
+                      <div className="w-5 h-5 rounded-full border-2 border-t-[var(--primary)] border-[var(--primary)]/30 animate-spin" />
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        <ShoppingCart className="w-5 h-5" />
+                        <span>Add to Cart</span>
+                      </div>
+                    )}
                   </Button>
 
                   <AiQuoteGenerator productId={product._id} />

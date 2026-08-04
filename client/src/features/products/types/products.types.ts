@@ -59,6 +59,11 @@ export interface Product {
   subCategory?: string
   fabricType: string
   images: string[]
+  variants?: {
+    color: string
+    image?: string
+    stock: number
+  }[]
   priceRange: PriceRange
   moq: Moq
   leadTime: string
@@ -88,6 +93,7 @@ export interface ProductFilterParams {
   maxPrice?: number
   stockStatus?: string
   featured?: boolean
+  supplierId?: string
   sort?: 'newest' | 'price_asc' | 'price_desc' | 'moq_asc' | 'title_asc'
   page?: number
   limit?: number

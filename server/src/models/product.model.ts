@@ -12,6 +12,12 @@ export interface IMoq {
   unit: string
 }
 
+export interface IProductVariant {
+  color: string
+  image?: string
+  stock: number
+}
+
 export interface IProduct extends Document {
   supplierId: Types.ObjectId
   title: string
@@ -26,6 +32,7 @@ export interface IProduct extends Document {
   moq: IMoq
   leadTime: string
   stockStatus: 'in_stock' | 'made_to_order' | 'out_of_stock'
+  variants?: IProductVariant[]
   certifications: string[]
   tags: string[]
   specifications: Record<string, string>
@@ -113,6 +120,13 @@ const productSchema = new Schema<IProduct>(
       enum: ['in_stock', 'made_to_order', 'out_of_stock'],
       default: 'made_to_order',
     },
+    variants: [
+      {
+        color: { type: String, required: true },
+        image: { type: String },
+        stock: { type: Number, required: true, default: 0 }
+      }
+    ],
     certifications: {
       type: [String],
       default: [],

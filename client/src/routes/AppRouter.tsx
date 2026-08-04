@@ -10,6 +10,9 @@ const MarketplacePage = lazy(() => import('@/features/products/pages/Marketplace
 const CategoriesPage = lazy(() => import('@/features/products/pages/CategoriesPage').then(module => ({ default: module.CategoriesPage })))
 const ProductDetailPage = lazy(() => import('@/features/products/pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })))
 const SupplierProfilePage = lazy(() => import('@/features/products/pages/SupplierProfilePage').then(module => ({ default: module.SupplierProfilePage })))
+const CartPage = lazy(() => import('@/features/cart/pages/CartPage').then(module => ({ default: module.CartPage })))
+const CheckoutPage = lazy(() => import('@/features/cart/pages/CheckoutPage').then(module => ({ default: module.CheckoutPage })))
+const CheckoutConfirmationPage = lazy(() => import('@/features/cart/pages/CheckoutConfirmationPage').then(module => ({ default: module.CheckoutConfirmationPage })))
 
 const DevPage = lazy(() => import('@/features/dev/pages/DevPage').then(module => ({ default: module.DevPage })))
 const NotFoundPage = lazy(() => import('@/shared/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
@@ -34,6 +37,11 @@ export function AppRouter() {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
           <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
+          <Route element={<ProtectedRoute requireOnboarded={true} />}>
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/checkout/confirmation" element={<CheckoutConfirmationPage />} />
+          </Route>
         </Route>
 
         {/* Guest Only Routes (Login, Register) */}

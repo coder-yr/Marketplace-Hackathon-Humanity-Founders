@@ -25,9 +25,20 @@ export interface IBuyerProfile extends Document {
   buyingFrequency?: string
   preferredPaymentTerms?: string
   
+  // Shopping Cart
+  cart?: ICartItem[]
+  
   profileCompletion: number
   createdAt: Date
   updatedAt: Date
+}
+
+export interface ICartItem {
+  productId: mongoose.Types.ObjectId
+  supplierId: mongoose.Types.ObjectId
+  quantity: number
+  color?: string
+  price?: number
 }
 
 const buyerProfileSchema = new Schema<IBuyerProfile>(
@@ -69,6 +80,15 @@ const buyerProfileSchema = new Schema<IBuyerProfile>(
       min: 0,
       max: 100,
     },
+    cart: [
+      {
+        productId: { type: Schema.Types.ObjectId, ref: 'Product' },
+        supplierId: { type: Schema.Types.ObjectId, ref: 'User' },
+        quantity: { type: Number, default: 1 },
+        color: String,
+        price: Number,
+      }
+    ]
   },
   {
     timestamps: true,

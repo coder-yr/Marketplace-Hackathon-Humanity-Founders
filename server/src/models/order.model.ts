@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 export interface IOrder extends Document {
-  quoteId: mongoose.Types.ObjectId
+  quoteId?: mongoose.Types.ObjectId
   buyerId: mongoose.Types.ObjectId
   supplierId: mongoose.Types.ObjectId
   productId: mongoose.Types.ObjectId
@@ -40,7 +40,7 @@ const orderSchema = new Schema<IOrder>(
     quoteId: {
       type: Schema.Types.ObjectId,
       ref: 'Quote',
-      required: true,
+      required: false,
     },
     buyerId: {
       type: Schema.Types.ObjectId,

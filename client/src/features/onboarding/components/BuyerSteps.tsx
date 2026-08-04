@@ -27,22 +27,30 @@ export function BuyerBusinessStep() {
 export function BuyerIndustryStep() {
   const { register, formState: { errors } } = useFormContext()
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold text-text-primary">Industry & Volume</h2>
-      <p className="text-text-secondary text-sm mb-4">What industry do you operate in?</p>
+    <div className="flex flex-col gap-6">
+      <div className="flex gap-4 items-start">
+        <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold text-sm shrink-0">
+          AI
+        </div>
+        <div className="bg-[#F8FAFC] border border-[var(--border)] p-4 rounded-[16px] rounded-tl-none">
+          <p className="text-[var(--heading)] font-medium text-[15px]">What kind of fabrics do you usually source? And what's your average monthly requirement?</p>
+        </div>
+      </div>
       
-      <Input
-        label="Industry"
-        placeholder="e.g. Fashion, Home Textiles, Medical"
-        error={errors.industry?.message as string}
-        {...register('industry')}
-      />
-      <Input
-        label="Monthly Requirement (Volume)"
-        placeholder="e.g. 5000 meters"
-        error={errors.monthlyRequirement?.message as string}
-        {...register('monthlyRequirement')}
-      />
+      <div className="pl-12 flex flex-col gap-4">
+        <Input
+          label="Preferred Fabrics / Categories"
+          placeholder="e.g. Cotton, Linen, Knitwear..."
+          error={errors.industry?.message as string}
+          {...register('industry')}
+        />
+        <Input
+          label="Average Monthly Requirement"
+          placeholder="e.g. 2000 meters"
+          error={errors.monthlyRequirement?.message as string}
+          {...register('monthlyRequirement')}
+        />
+      </div>
     </div>
   )
 }
@@ -50,28 +58,36 @@ export function BuyerIndustryStep() {
 export function BuyerPreferencesStep() {
   const { register, formState: { errors } } = useFormContext()
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold text-text-primary">Buying Preferences</h2>
-      <p className="text-text-secondary text-sm mb-4">This helps our AI recommend the best suppliers for you.</p>
+    <div className="flex flex-col gap-6">
+      <div className="flex gap-4 items-start">
+        <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold text-sm shrink-0">
+          AI
+        </div>
+        <div className="bg-[#F8FAFC] border border-[var(--border)] p-4 rounded-[16px] rounded-tl-none">
+          <p className="text-[var(--heading)] font-medium text-[15px]">Got it. What's your typical budget range, and what kind of suppliers do you prefer working with?</p>
+        </div>
+      </div>
       
-      <Input
-        label="Preferred Supplier Type"
-        placeholder="e.g. Manufacturer, Wholesaler"
-        error={errors.preferredSupplierType?.message as string}
-        {...register('preferredSupplierType')}
-      />
-      <Input
-        label="Budget Range"
-        placeholder="e.g. $10,000 - $50,000"
-        error={errors.budgetRange?.message as string}
-        {...register('budgetRange')}
-      />
-      <Input
-        label="Preferred MOQ"
-        placeholder="e.g. Low MOQ (<100m)"
-        error={errors.moqPreference?.message as string}
-        {...register('moqPreference')}
-      />
+      <div className="pl-12 flex flex-col gap-4">
+        <Input
+          label="Budget Range"
+          placeholder="e.g. Below $250/m or $10,000 Total"
+          error={errors.budgetRange?.message as string}
+          {...register('budgetRange')}
+        />
+        <Input
+          label="Preferred Supplier Type"
+          placeholder="e.g. Manufacturer, Wholesaler"
+          error={errors.preferredSupplierType?.message as string}
+          {...register('preferredSupplierType')}
+        />
+        <Input
+          label="Preferred MOQ"
+          placeholder="e.g. Low MOQ (<100m)"
+          error={errors.moqPreference?.message as string}
+          {...register('moqPreference')}
+        />
+      </div>
     </div>
   )
 }

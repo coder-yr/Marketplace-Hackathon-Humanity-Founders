@@ -32,6 +32,7 @@ export interface ISupplierProfile extends Document {
   productionCapacity?: string
   leadTime?: string
   certifications?: string[] // e.g., ISO9001
+  factoryPhotos?: string[]
   
   // Supplier Intelligence & Analytics
   yearsInBusiness?: number
@@ -86,6 +87,7 @@ const supplierProfileSchema = new Schema<ISupplierProfile>(
     productionCapacity: String,
     leadTime: String,
     certifications: [String],
+    factoryPhotos: [String],
 
     yearsInBusiness: Number,
     aiTrustScore: { type: Number, min: 0, max: 100, default: 85 },

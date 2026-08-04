@@ -49,6 +49,7 @@ export const supplierProfileSchema = z.object({
     productionCapacity: z.string().optional(),
     leadTime: z.string().optional(),
     certifications: z.array(z.string()).optional(),
+    factoryPhotos: z.array(z.string()).optional(),
   }),
 })
 

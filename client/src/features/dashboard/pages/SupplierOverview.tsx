@@ -13,6 +13,10 @@ import {
 } from 'recharts'
 import { motion } from 'framer-motion'
 import { transitionCard, transitionFast } from '@/shared/animations'
+import { useAuthStore } from '@/features/auth/store/auth.store'
+import { useEffect, useState } from 'react'
+import { productsApi } from '@/features/products/api/products.api'
+import { Product } from '@/features/products/types/products.types'
 
 const KPI_CARDS = [
   { title: 'Gross Volume', value: '$124.5K', change: '+12.5%', icon: TrendingUp, timeframe: 'vs last month' },
@@ -31,6 +35,45 @@ const data = [
 ]
 
 export function SupplierOverview() {
+  const { user } = useAuthStore()
+  const [products, setProducts] = useState<Product[]>([])
+  
+  useEffect(() => {
+    if (user?._id) {
+      productsApi.getProducts({ supplierId: user._id, limit: 100 })
+        .then(res => setProducts(res.data))
+        .catch(err => console.error(err))
+    }
+  }, [user])
+
+  // Compute Inventory Alerts
+  const inventoryAlerts = products.flatMap(p => {
+    if (!p.variants) return []
+    return p.variants.map(v => {
+      let status = 'Good'
+      let statusType = 'default'
+      if (v.stock === 0) {
+        status = 'Out of Stock'
+        statusType = 'error'
+      } else if (v.stock < p.moq.value) {
+        status = 'Low Stock (< MOQ)'
+        statusType = 'warning'
+      } else if (v.stock < 100) {
+        status = 'Restock Soon'
+        statusType = 'warning'
+      } else {
+        return null // Don't alert if stock is good
+      }
+      
+      return {
+        product: p,
+        variant: v,
+        status,
+        statusType
+      }
+    }).filter(Boolean)
+  })
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -190,28 +233,44 @@ export function SupplierOverview() {
           </div>
         </Card>
 
-        {/* AI Recommendations */}
-        <Card className="p-6 shadow-sm border border-[var(--border)] bg-white relative overflow-hidden group h-[320px] flex flex-col rounded-[24px]">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Sparkles className="w-40 h-40 text-[var(--primary)]" />
+
+
+        {/* Inventory Alerts Widget */}
+        <Card className="p-6 shadow-sm border border-[var(--border)] bg-white relative overflow-hidden h-[320px] flex flex-col rounded-[24px]">
+          <div className="flex items-center justify-between mb-5 relative z-10">
+            <h3 className="font-bold text-[var(--heading)] text-[15px] flex items-center gap-2">
+              <Store className="w-4 h-4 text-[var(--primary)]" /> Inventory Alerts
+            </h3>
+            {inventoryAlerts.length > 0 && (
+              <Badge className="bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20 text-[10px] font-bold">
+                {inventoryAlerts.length} Alerts
+              </Badge>
+            )}
           </div>
-          <div className="flex items-center gap-2 mb-5 relative z-10">
-            <Sparkles className="w-4 h-4 text-[var(--primary)]" />
-            <h3 className="font-bold text-[var(--heading)] text-[15px]">AI Market Insights</h3>
-          </div>
+          
           <div className="space-y-4 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            <div className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
-              <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[var(--primary)]">Pricing Strategy</Badge>
-              <p className="text-[12px] font-medium text-[var(--heading)] leading-relaxed">
-                Your quotes for <strong className="text-[var(--primary)]">Heavyweight Denim</strong> are 15% higher than the platform average. Lowering your bulk tier by $0.30/m could increase win rate by 40%.
-              </p>
-            </div>
-            <div className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
-              <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[#F59E0B]">Demand Trend</Badge>
-              <p className="text-[12px] font-medium text-[var(--heading)] leading-relaxed">
-                Searches for <strong className="text-amber-600">Recycled Cotton</strong> are up 200% this week. Consider publishing your eco-friendly catalog items.
-              </p>
-            </div>
+            {inventoryAlerts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-[#94A3B8]">
+                <Store className="w-8 h-8 mb-2 opacity-50" />
+                <p className="text-[13px] font-medium text-center">All variants are well-stocked.</p>
+              </div>
+            ) : (
+              inventoryAlerts.map((alert: any, idx) => (
+                <div key={idx} className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge className={`text-[9px] font-bold uppercase tracking-widest bg-white border ${
+                      alert.statusType === 'error' ? 'border-[var(--error)] text-[var(--error)]' : 'border-[#F59E0B] text-[#F59E0B]'
+                    }`}>
+                      {alert.status}
+                    </Badge>
+                    <span className="text-[11px] font-bold text-[var(--heading)]">Stock: {alert.variant.stock}</span>
+                  </div>
+                  <p className="text-[12px] font-medium text-[var(--heading)] leading-relaxed">
+                    <strong className="text-[var(--primary)]">{alert.product.title}</strong> - {alert.variant.color}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </Card>
 

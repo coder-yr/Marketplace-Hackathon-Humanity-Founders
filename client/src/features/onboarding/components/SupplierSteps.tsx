@@ -89,8 +89,8 @@ export function SupplierCategoriesStep() {
   const { register, formState: { errors } } = useFormContext()
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold text-text-primary">Categories & Products</h2>
-      <p className="text-text-secondary text-sm mb-4">What kind of textiles do you specialize in? (Comma separated for now)</p>
+      <h2 className="text-xl font-bold text-[var(--heading)]">Categories & Compliance</h2>
+      <p className="text-[var(--body)] text-sm mb-4">Enterprise buyers require strict compliance and certification details.</p>
       
       <Input
         label="Categories"
@@ -103,6 +103,13 @@ export function SupplierCategoriesStep() {
         placeholder="Yarn, Fabric, Garments"
         error={errors.productTypes?.message as string}
         {...register('productTypes')}
+      />
+      <Input
+        label="Certifications (Mandatory)"
+        placeholder="e.g. ISO 9001, GOTS, Oeko-Tex"
+        error={errors.certifications?.message as string}
+        {...register('certifications')}
+        required
       />
     </div>
   )
@@ -144,6 +151,21 @@ export function SupplierBrandingStep() {
               value={value}
               onChange={onChange}
               error={errors.banner?.message as string}
+            />
+          )}
+        />
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-[var(--border)]">
+        <Controller
+          name="factoryPhotos"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <ImageUpload
+              label="Factory Photos (Mandatory for Enterprise)"
+              value={Array.isArray(value) ? value[0] : value}
+              onChange={(url) => onChange([url])}
+              error={errors.factoryPhotos?.message as string}
             />
           )}
         />

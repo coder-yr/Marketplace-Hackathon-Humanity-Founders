@@ -1,13 +1,23 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store/auth.store'
-import { Search, Menu, Zap, Hexagon, User, Command, Bell } from 'lucide-react'
+import { useCartStore } from '@/features/cart/store/cart.store'
+import { Search, Menu, Zap, Hexagon, User, Command, Bell, ShoppingCart } from 'lucide-react'
 import { EnterpriseCopilot } from '@/features/ai/components/EnterpriseCopilot'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/shared/components/ui/button'
 
 export function MainLayout({ children }: { children?: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
+  const { items, fetchCart } = useCartStore()
+  const totalItemsCount = items.length
   const location = useLocation()
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'buyer') {
+      fetchCart()
+    }
+  }, [isAuthenticated, user, fetchCart])
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F8FA] font-sans text-[var(--body)]">
@@ -56,10 +66,24 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
             </div>
 
             {isAuthenticated && (
-              <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-[#DC2626] rounded-full border border-[#0A2540]" />
-              </button>
+              <>
+                <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors relative">
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-[#DC2626] rounded-full border border-[#0A2540]" />
+                </button>
+                {user?.role === 'buyer' && (
+                  <Link to="/cart">
+                    <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors relative">
+                      <ShoppingCart className="w-5 h-5" />
+                      {totalItemsCount > 0 && (
+                        <span className="absolute top-1 right-1 w-4 h-4 bg-[var(--primary)] text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-[#0A2540]">
+                          {totalItemsCount}
+                        </span>
+                      )}
+                    </button>
+                  </Link>
+                )}
+              </>
             )}
 
             <div className="flex items-center gap-4">

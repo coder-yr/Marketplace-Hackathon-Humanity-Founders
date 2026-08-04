@@ -18,6 +18,7 @@ import { rfqRouter } from './routes/rfq.routes'
 import { quoteRouter } from './routes/quote.routes'
 import { orderRouter } from './routes/order.routes'
 import { messageRouter } from './routes/message.routes'
+import { cartRouter } from './routes/cart.routes'
 
 const app = express()
 
@@ -61,6 +62,7 @@ app.use('/api/rfqs', rfqRouter)
 app.use('/api/quotes', quoteRouter)
 app.use('/api/orders', orderRouter)
 app.use('/api/messages', messageRouter)
+app.use('/api/cart', cartRouter)
 
 // ── Error Handling ────────────────────────────────────────────────
 app.use(notFoundHandler)
