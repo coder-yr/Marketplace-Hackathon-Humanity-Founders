@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
-import { CheckCircle2, Package, ArrowRight, Home } from 'lucide-react'
+import { CheckCircle2, Package, Home } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export function CheckoutConfirmationPage() {

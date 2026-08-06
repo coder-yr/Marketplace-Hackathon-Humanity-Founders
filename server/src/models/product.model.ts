@@ -38,7 +38,7 @@ export interface IProduct extends Document {
   specifications: Record<string, string>
   featured: boolean
   published: boolean
-  status: 'active' | 'draft' | 'archived'
+  status: 'active' | 'draft' | 'ready_for_review' | 'archived' | 'rejected'
   isDeleted: boolean
   aiSummary?: string
   aiSummaryGeneratedAt?: Date
@@ -70,19 +70,19 @@ const productSchema = new Schema<IProduct>(
     },
     shortDescription: {
       type: String,
-      required: [true, 'Short description is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'Short description is required'],
       trim: true,
       maxlength: [300, 'Short description cannot exceed 300 characters'],
     },
     description: {
       type: String,
-      required: [true, 'Description is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'Description is required'],
       trim: true,
     },
     category: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
-      required: [true, 'Category is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'Category is required'],
       index: true,
     },
     subCategory: {
@@ -91,28 +91,28 @@ const productSchema = new Schema<IProduct>(
     },
     fabricType: {
       type: String,
-      required: [true, 'Fabric type is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'Fabric type is required'],
       trim: true,
       index: true,
     },
     images: {
       type: [String],
-      required: [true, 'At least one product image is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'At least one product image is required'],
       default: [],
     },
     priceRange: {
-      min: { type: Number, required: true },
-      max: { type: Number, required: true },
+      min: { type: Number, required: function(this: any) { return this.status !== 'draft' } },
+      max: { type: Number, required: function(this: any) { return this.status !== 'draft' } },
       currency: { type: String, default: 'USD' },
       unit: { type: String, default: 'meter' },
     },
     moq: {
-      value: { type: Number, required: true },
+      value: { type: Number, required: function(this: any) { return this.status !== 'draft' } },
       unit: { type: String, default: 'meters' },
     },
     leadTime: {
       type: String,
-      required: [true, 'Lead time is required'],
+      required: [function(this: any) { return this.status !== 'draft' }, 'Lead time is required'],
       trim: true,
     },
     stockStatus: {
@@ -152,8 +152,8 @@ const productSchema = new Schema<IProduct>(
     },
     status: {
       type: String,
-      enum: ['active', 'draft', 'archived'],
-      default: 'active',
+      enum: ['active', 'draft', 'ready_for_review', 'archived', 'rejected'],
+      default: 'draft',
       index: true,
     },
     isDeleted: {

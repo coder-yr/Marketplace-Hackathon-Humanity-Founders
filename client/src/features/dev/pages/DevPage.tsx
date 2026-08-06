@@ -249,11 +249,11 @@ export function DevPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="default">Default</Badge>
                 <Badge variant="primary">Primary</Badge>
-                <Badge variant="secondary">Secondary</Badge>
+                <Badge variant="outline">Secondary</Badge>
                 <Badge variant="success" dot>Success</Badge>
                 <Badge variant="warning" dot>Warning</Badge>
                 <Badge variant="error" dot>Error</Badge>
-                <Badge variant="info">Info</Badge>
+                <Badge variant="default">Info</Badge>
                 <Badge variant="outline">Outline</Badge>
                 <Badge variant="primary" onRemove={() => toast.info('Badge removed')}>Removable</Badge>
               </div>

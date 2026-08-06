@@ -120,7 +120,7 @@ export function OnboardingPage() {
     try {
       await onboardingApi.completeOnboarding()
       // Re-initialize auth store to get updated user (isOnboarded: true)
-      await initialize()
+      await initialize(true)
       navigate('/workspace-setup', { replace: true })
     } catch (err: any) {
       toast.error(err.response?.data?.error?.message || 'Failed to complete onboarding')

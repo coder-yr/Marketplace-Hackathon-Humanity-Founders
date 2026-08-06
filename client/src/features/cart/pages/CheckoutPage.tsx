@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../store/cart.store'
+import { useWorkspaceStore } from '@/features/dashboard/store/workspace.store'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
-import { MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { MapPin, ShieldCheck, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
-import { motion } from 'framer-motion'
 
 export function CheckoutPage() {
   const { items, estimatedTotal, totalQuantity, checkout } = useCartStore()
@@ -32,6 +32,8 @@ export function CheckoutPage() {
     setIsSubmitting(true)
     try {
       await checkout(shippingDetails)
+      // Invalidate workspace cache so the new order shows up in the dashboard
+      useWorkspaceStore.getState().fetchWorkspace(true)
       navigate('/checkout/confirmation')
     } catch (error: any) {
       toast.error(error.message || 'Checkout failed')

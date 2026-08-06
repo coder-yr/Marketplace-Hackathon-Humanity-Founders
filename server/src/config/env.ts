@@ -19,6 +19,13 @@ const envSchema = z.object({
   LOG_LEVEL: z
     .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
     .default('info'),
+  // AI / OpenRouter
+  OPENROUTER_API_KEY: z.string().optional(),
+  OPENROUTER_BASE_URL: z.string().default('https://openrouter.ai/api/v1'),
+  OPENROUTER_DEFAULT_MODEL: z.string().default('google/gemini-2.5-flash'),
+  GEMINI_API_KEY: z.string().optional(),
+  OLLAMA_ENABLED: z.string().optional(),
+  OLLAMA_URL: z.string().optional(),
 })
 
 function validateEnv() {

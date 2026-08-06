@@ -12,13 +12,23 @@ export function DashboardLayout() {
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  const NAV_ITEMS = [
-    { label: 'Procurement', path: '/dashboard/procurement', icon: LayoutDashboard },
+  const BUYER_NAV_ITEMS = [
+    { label: 'Overview', path: '/dashboard/overview', icon: LayoutDashboard },
+    { label: 'Procurement', path: '/dashboard/procurement', icon: Package },
     { label: 'RFQs & Quotes', path: '/dashboard/rfqs/active', icon: FileText },
-    { label: 'Logistics', path: '/dashboard/orders/active', icon: Package },
     { label: 'Analytics', path: '/dashboard/analytics', icon: BarChart3 },
     { label: 'Activity', path: '/dashboard/activity', icon: Activity },
   ]
+
+  const SUPPLIER_NAV_ITEMS = [
+    { label: 'Overview', path: '/dashboard/overview', icon: LayoutDashboard },
+    { label: 'Products', path: '/dashboard/products', icon: Package },
+    { label: 'Quotes & Orders', path: '/dashboard/procurement', icon: FileText },
+    { label: 'Analytics', path: '/dashboard/analytics', icon: BarChart3 },
+    { label: 'Activity', path: '/dashboard/activity', icon: Activity },
+  ]
+
+  const NAV_ITEMS = user?.role === 'supplier' ? SUPPLIER_NAV_ITEMS : BUYER_NAV_ITEMS
 
   const handleLogout = () => {
     logout()
@@ -101,13 +111,20 @@ export function DashboardLayout() {
           <div className="font-bold text-[var(--heading)] text-[18px]">
             {NAV_ITEMS.find(i => pathname.startsWith(i.path.split('/')[2] ? `/dashboard/${i.path.split('/')[2]}` : i.path))?.label || 'Dashboard'}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+             <Link 
+               to="/marketplace" 
+               className="hidden md:flex items-center gap-1.5 text-[13px] font-bold text-[#64748B] hover:text-[var(--primary)] transition-colors mr-2"
+             >
+               <ChevronLeft className="w-4 h-4" /> Back to Marketplace
+             </Link>
+             <div className="w-px h-6 bg-[var(--border)] mr-2 hidden md:block" />
              <div className="text-right hidden sm:block">
-               <p className="text-[13px] font-bold text-[var(--heading)]">{user?.firstName} {user?.lastName}</p>
+               <p className="text-[13px] font-bold text-[var(--heading)]">{user?.fullName || 'User'}</p>
                <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{user?.role}</p>
              </div>
              <div className="w-10 h-10 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold shadow-sm">
-               {user?.firstName?.charAt(0) || 'U'}
+               {user?.fullName?.charAt(0) || 'U'}
              </div>
           </div>
         </div>

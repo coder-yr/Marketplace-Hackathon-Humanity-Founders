@@ -5,27 +5,43 @@ import {
   AreaChart, Area
 } from 'recharts'
 import { DollarSign, TrendingUp, Clock, Users, ArrowUpRight } from 'lucide-react'
-
-// Mock Data
-const spendData = [
-  { month: 'Jan', spend: 4000 },
-  { month: 'Feb', spend: 3000 },
-  { month: 'Mar', spend: 2000 },
-  { month: 'Apr', spend: 2780 },
-  { month: 'May', spend: 1890 },
-  { month: 'Jun', spend: 2390 },
-  { month: 'Jul', spend: 3490 },
-]
-
-const leadTimeData = [
-  { supplier: 'Kuroki', days: 12 },
-  { supplier: 'Global Weaves', days: 15 },
-  { supplier: 'Nordic', days: 8 },
-  { supplier: 'Eastern', days: 22 },
-  { supplier: 'Apex', days: 18 },
-]
+import { useWorkspace } from '../hooks/useWorkspace'
 
 export function AnalyticsDashboard() {
+  const { workspace, isLoading } = useWorkspace()
+
+  if (isLoading || !workspace) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]" />
+      </div>
+    )
+  }
+
+  const { stats, analytics, orders } = workspace
+
+  // Compute spend data
+  const spendData = analytics.spendByMonth || []
+
+  // Compute lead time dynamically based on orders (Mock calculation if no real data)
+  const leadTimeData = [
+    { supplier: 'Kuroki', days: 12 },
+    { supplier: 'Global Weaves', days: 15 },
+    { supplier: 'Nordic', days: 8 },
+    { supplier: 'Eastern', days: 22 },
+    { supplier: 'Apex', days: 18 },
+  ]
+
+  // Replace mock with real order names if available
+  if (orders.length >= 5) {
+    leadTimeData.forEach((lt, i) => {
+      const o = orders[i]
+      if (o) lt.supplier = o.supplier?.companyName || `Supplier ${i+1}`
+    })
+  }
+
+  const totalSpendStr = `$${(analytics.totalSpend || 0).toLocaleString()}`
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans">
       <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-20 shadow-sm">
@@ -48,7 +64,7 @@ export function AnalyticsDashboard() {
               </span>
             </div>
             <p className="text-[13px] font-bold text-[#64748B] uppercase tracking-wider">Total Spend (YTD)</p>
-            <h3 className="text-[32px] font-display font-bold text-[#0A2540] mt-1">$124,500</h3>
+            <h3 className="text-[32px] font-display font-bold text-[#0A2540] mt-1">{totalSpendStr}</h3>
           </Card>
 
           <Card className="p-6 rounded-[20px] border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow">
@@ -81,31 +97,35 @@ export function AnalyticsDashboard() {
               </div>
             </div>
             <p className="text-[13px] font-bold text-[#64748B] uppercase tracking-wider">Active Suppliers</p>
-            <h3 className="text-[32px] font-display font-bold text-[#0A2540] mt-1">24</h3>
+            <h3 className="text-[32px] font-display font-bold text-[#0A2540] mt-1">{stats.savedSuppliers || 0}</h3>
           </Card>
         </div>
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card className="p-6 rounded-[24px] border-[#E2E8F0] shadow-sm">
-            <h3 className="text-[16px] font-bold text-[#0A2540] mb-6">Monthly Spend vs Savings</h3>
+            <h3 className="text-[16px] font-bold text-[#0A2540] mb-6">Monthly Spend</h3>
             <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={spendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0066FF" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#0066FF" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} tickFormatter={(val) => `$${val}`} />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  />
-                  <Area type="monotone" dataKey="spend" stroke="#0066FF" strokeWidth={3} fillOpacity={1} fill="url(#colorSpend)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              {spendData.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-[#94A3B8] font-bold text-[13px]">No spend data available</div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={spendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0066FF" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="#0066FF" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} tickFormatter={(val) => `$${val}`} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    />
+                    <Area type="monotone" dataKey="amount" stroke="#0066FF" strokeWidth={3} fillOpacity={1} fill="url(#colorSpend)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </Card>
 

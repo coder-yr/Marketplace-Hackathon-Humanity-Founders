@@ -1,34 +1,155 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Container } from '@/shared/components/layout/container'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Search, Filter, Plus, Truck, Clock, AlertCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useWorkspace } from '../hooks/useWorkspace'
+import { formatDistanceToNow } from 'date-fns'
+import { toast } from 'sonner'
 
-// Mock Data for Kanban
-const initialColumns = [
-  { id: 'draft', title: 'Draft RFQs', count: 2 },
-  { id: 'submitted', title: 'Submitted', count: 3 },
-  { id: 'quoting', title: 'Quote Received', count: 1 },
-  { id: 'negotiation', title: 'Negotiating', count: 2 },
-  { id: 'po', title: 'Purchase Orders', count: 1 },
-  { id: 'production', title: 'In Production', count: 4 },
-  { id: 'shipping', title: 'Shipping', count: 2 },
-]
-
-const mockItems = [
-  { id: '1', column: 'draft', title: 'Heavyweight Denim 14oz', supplier: 'Pending', date: '2 days ago', priority: 'Medium' },
-  { id: '2', column: 'submitted', title: 'Organic Cotton Jersey', supplier: 'Kuroki Textiles', date: '1 day ago', priority: 'High' },
-  { id: '3', column: 'quoting', title: 'Recycled Poly Blend', supplier: 'Global Weaves', date: '5 hours ago', priority: 'Medium', alert: 'Quote expires soon' },
-  { id: '4', column: 'negotiation', title: 'Linen Twill', supplier: 'Nordic Fabrics', date: '3 days ago', priority: 'Low' },
-  { id: '5', column: 'production', title: 'Silk Satin 19mm', supplier: 'Eastern Silks', date: 'Updating', priority: 'High', progress: 45 },
-  { id: '6', column: 'shipping', title: 'Technical Nylon', supplier: 'Apex Materials', date: 'ETA: Oct 12', priority: 'Medium', tracking: 'AWB-883921' }
-]
+import { useAuthStore } from '@/features/auth/store/auth.store'
+import { api } from '@/lib/axios'
 
 export function ProcurementWorkspace() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
+  const { workspace, isLoading, refresh } = useWorkspace()
+  const { user } = useAuthStore()
+  const [localItems, setLocalItems] = useState<any[]>([])
+
+  const isSupplier = user?.role === 'supplier'
+
+  const KANBAN_COLUMNS = isSupplier ? [
+    { id: 'submitted', title: 'New RFQ Requests' },
+    { id: 'quoting', title: 'Quoted' },
+    { id: 'negotiation', title: 'Negotiating' },
+    { id: 'po', title: 'New Orders' },
+    { id: 'production', title: 'In Production' },
+    { id: 'shipping', title: 'Shipping' },
+  ] : [
+    { id: 'draft', title: 'Draft RFQs' },
+    { id: 'submitted', title: 'Submitted RFQs' },
+    { id: 'quoting', title: 'Quote Received' },
+    { id: 'negotiation', title: 'Negotiating' },
+    { id: 'po', title: 'Purchase Orders' },
+    { id: 'production', title: 'In Production' },
+    { id: 'shipping', title: 'Shipping' },
+  ]
+
+  // Sync local items with workspace data
+  useEffect(() => {
+    if (!workspace) return
+    
+    const { rfqs, orders } = workspace
+    const newItems: any[] = []
+
+    rfqs.forEach(rfq => {
+      let column = 'submitted'
+      if (rfq.status === 'draft') column = 'draft'
+      if (rfq.status === 'quoting') column = 'quoting'
+      if (rfq.status === 'negotiating') column = 'negotiation'
+      if (rfq.status === 'accepted') column = 'po' // Temporary until PO created
+      if (rfq.status === 'closed') return
+
+      newItems.push({
+        id: rfq._id,
+        type: 'rfq',
+        column,
+        title: rfq.title,
+        supplier: 'Multiple Suppliers',
+        date: formatDistanceToNow(new Date(rfq.createdAt), { addSuffix: true }),
+        priority: 'Medium',
+        alert: rfq.status === 'quoting' ? 'Needs Review' : null
+      })
+    })
+
+    orders.forEach(order => {
+      let column = 'po'
+      const status = (order.status || '').toLowerCase()
+      if (status === 'processing') column = 'production'
+      if (status === 'shipped') column = 'shipping'
+      if (status === 'delivered') return
+
+      // Safely extract a string representation of the supplier ID
+      const supplierRef = order.supplierId || order.supplier
+      const supplierStr = supplierRef ? (typeof supplierRef === 'object' ? (supplierRef._id || supplierRef.fullName || 'Unknown') : supplierRef.toString()) : 'Unknown'
+
+      newItems.push({
+        id: order._id,
+        type: 'order',
+        column,
+        title: `Order ${order._id.substring(order._id.length - 4)}`,
+        supplier: 'Supplier ID ' + supplierStr.substring(0,4),
+        date: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }),
+        priority: 'High',
+        progress: order.status === 'Processing' ? 65 : undefined,
+        tracking: order.status === 'Shipped' ? 'AWB-PENDING' : null
+      })
+    })
+
+    setLocalItems(newItems)
+  }, [workspace])
+
+  // Handle Drag and Drop
+  const handleDragStart = (e: React.DragEvent, item: any) => {
+    e.dataTransfer.setData('itemId', item.id)
+    e.dataTransfer.setData('itemType', item.type)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault() // required to allow drop
+  }
+
+  const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
+    e.preventDefault()
+    const itemId = e.dataTransfer.getData('itemId')
+    const itemType = e.dataTransfer.getData('itemType')
+    
+    if (!itemId) return
+
+    const originalItem = localItems.find(i => i.id === itemId)
+    if (!originalItem || originalItem.column === targetColumnId) return
+
+    // Optimistically update UI
+    setLocalItems(prev => prev.map(item => 
+      item.id === itemId ? { ...item, column: targetColumnId } : item
+    ))
+
+    if (itemType === 'order') {
+      let newStatus = 'Pending'
+      if (targetColumnId === 'production') newStatus = 'Processing'
+      if (targetColumnId === 'shipping') newStatus = 'Shipped'
+      if (targetColumnId === 'po') newStatus = 'Pending'
+      
+      try {
+        await api.patch(`/orders/${itemId}/status`, { status: newStatus })
+        toast.success('Status updated successfully')
+        refresh() // sync with backend
+      } catch (err) {
+        toast.error('Failed to update status')
+        refresh() // revert on fail
+      }
+    } else {
+      toast.info('RFQ status updating coming soon!')
+      refresh() // revert RFQ visual change since it's not supported via API
+    }
+  }
+
+  // Filter items by search
+  const filteredItems = localItems.filter(item => 
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  if (isLoading && !workspace) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24">
@@ -37,8 +158,8 @@ export function ProcurementWorkspace() {
         <Container className="py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-[28px] font-display font-bold text-[#0A2540]">Procurement Workspace</h1>
-              <p className="text-[14px] text-[#64748B] mt-1 font-medium">Manage your entire sourcing lifecycle from RFQ to Delivery.</p>
+              <h1 className="text-[28px] font-display font-bold text-[#0A2540]">{isSupplier ? 'Quotes & Orders' : 'Procurement Workspace'}</h1>
+              <p className="text-[14px] text-[#64748B] mt-1 font-medium">{isSupplier ? 'Manage incoming RFQs and track active orders.' : 'Manage your entire sourcing lifecycle from RFQ to Delivery.'}</p>
             </div>
             
             <div className="flex items-center gap-3">
@@ -55,9 +176,11 @@ export function ProcurementWorkspace() {
               <Button variant="outline" className="border-[#E2E8F0] text-[#0A2540] h-[38px] px-3 rounded-[8px]">
                 <Filter className="w-4 h-4 mr-2" /> Filters
               </Button>
-              <Button className="bg-[#0A2540] hover:bg-[#1E293B] text-white h-[38px] px-4 rounded-[8px] font-bold">
-                <Plus className="w-4 h-4 mr-1.5" /> New RFQ
-              </Button>
+              {!isSupplier && (
+                <Button onClick={() => toast.info('New RFQ flow coming soon!')} className="bg-[#0A2540] hover:bg-[#1E293B] text-white h-[38px] px-4 rounded-[8px] font-bold">
+                  <Plus className="w-4 h-4 mr-1.5" /> New RFQ
+                </Button>
+              )}
             </div>
           </div>
         </Container>
@@ -67,73 +190,87 @@ export function ProcurementWorkspace() {
       <div className="px-6 py-8 overflow-x-auto h-[calc(100vh-140px)] custom-scrollbar">
         <div className="flex gap-6 min-w-max pb-8 h-full">
           
-          {initialColumns.map((col) => (
-            <div key={col.id} className="w-[320px] flex flex-col h-full">
-              {/* Column Header */}
-              <div className="flex items-center justify-between mb-4 px-1">
-                <h3 className="text-[14px] font-bold text-[#0A2540] uppercase tracking-wider">{col.title}</h3>
-                <span className="bg-[#E2E8F0] text-[#475569] text-[11px] font-bold px-2 py-0.5 rounded-full">{col.count}</span>
-              </div>
-              
-              {/* Column Body */}
-              <div className="bg-[#F1F5F9] rounded-[16px] p-3 flex-1 overflow-y-auto border border-[#E2E8F0] space-y-3 custom-scrollbar">
+          {KANBAN_COLUMNS.map((col) => {
+            const columnItems = filteredItems.filter(item => item.column === col.id)
+            return (
+              <div 
+                key={col.id} 
+                className="w-[320px] flex flex-col h-full"
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, col.id)}
+              >
+                {/* Column Header */}
+                <div className="flex items-center justify-between mb-4 px-1">
+                  <h3 className="text-[14px] font-bold text-[#0A2540] uppercase tracking-wider">{col.title}</h3>
+                  <span className="bg-[#E2E8F0] text-[#475569] text-[11px] font-bold px-2 py-0.5 rounded-full">{columnItems.length}</span>
+                </div>
                 
-                {mockItems.filter(item => item.column === col.id).map((item) => (
-                  <motion.div 
-                    layoutId={item.id}
-                    key={item.id}
-                    onClick={() => {
-                      if (['production', 'shipping'].includes(item.column)) navigate(`/dashboard/orders/${item.id}`)
-                      else navigate(`/dashboard/rfqs/${item.id}`)
-                    }}
-                    className="bg-white p-4 rounded-[12px] shadow-sm border border-[#E2E8F0] cursor-pointer hover:shadow-md hover:border-[#CBD5E1] transition-all group relative"
-                  >
-                    {/* Priority Indicator */}
-                    <div className={`absolute top-0 left-0 w-1 h-full rounded-l-[12px] ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                    
-                    <div className="flex justify-between items-start mb-3">
-                      <Badge className="bg-[#F8FAFC] text-[#64748B] text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 border border-[#E2E8F0]">
-                        {['production', 'shipping'].includes(item.column) ? 'ORDER' : 'RFQ'}
-                      </Badge>
-                      <span className="text-[11px] font-semibold text-[#94A3B8] flex items-center gap-1"><Clock className="w-3 h-3"/> {item.date}</span>
+                {/* Column Body */}
+                <div className="bg-[#F1F5F9] rounded-[16px] p-3 flex-1 overflow-y-auto border border-[#E2E8F0] space-y-3 custom-scrollbar">
+                  
+                  {columnItems.length === 0 ? (
+                    <div className="h-full w-full border-2 border-dashed border-[#E2E8F0] rounded-[12px] flex items-center justify-center text-[12px] font-bold text-[#94A3B8]">
+                      Drop items here
                     </div>
-
-                    <h4 className="font-bold text-[#0A2540] text-[14px] mb-1 leading-snug group-hover:text-[#0066FF] transition-colors">{item.title}</h4>
-                    <p className="text-[12px] text-[#64748B] font-medium mb-3">{item.supplier}</p>
-                    
-                    {/* Status Specific Addons */}
-                    {item.alert && (
-                      <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-[6px] border border-amber-200 w-fit">
-                        <AlertCircle className="w-3.5 h-3.5" /> {item.alert}
+                  ) : columnItems.map((item) => (
+                    <motion.div 
+                      draggable
+                      onDragStart={(e: any) => handleDragStart(e, item)}
+                      layoutId={item.id}
+                      key={item.id}
+                      onClick={() => {
+                        if (item.type === 'order') navigate(`/dashboard/orders/${item.id}`)
+                        else navigate(`/dashboard/rfqs/${item.id}`)
+                      }}
+                      className="bg-white p-4 rounded-[12px] shadow-sm border border-[#E2E8F0] cursor-pointer hover:shadow-md hover:border-[#CBD5E1] transition-all group relative active:cursor-grabbing"
+                    >
+                      {/* Priority Indicator */}
+                      <div className={`absolute top-0 left-0 w-1 h-full rounded-l-[12px] ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                      
+                      <div className="flex justify-between items-start mb-3">
+                        <Badge className="bg-[#F8FAFC] text-[#64748B] text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 border border-[#E2E8F0]">
+                          {item.type === 'order' ? 'ORDER' : 'RFQ'}
+                        </Badge>
+                        <span className="text-[11px] font-semibold text-[#94A3B8] flex items-center gap-1"><Clock className="w-3 h-3"/> {item.date}</span>
                       </div>
-                    )}
-                    
-                    {item.progress !== undefined && (
-                      <div className="mt-2">
-                        <div className="flex justify-between text-[10px] font-bold text-[#64748B] mb-1">
-                          <span>Progress</span>
-                          <span>{item.progress}%</span>
+
+                      <h4 className="font-bold text-[#0A2540] text-[14px] mb-1 leading-snug group-hover:text-[#0066FF] transition-colors">{item.title}</h4>
+                      <p className="text-[12px] text-[#64748B] font-medium mb-3">{item.supplier}</p>
+                      
+                      {/* Status Specific Addons */}
+                      {item.alert && (
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-[6px] border border-amber-200 w-fit">
+                          <AlertCircle className="w-3.5 h-3.5" /> {item.alert}
                         </div>
-                        <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-                          <div className="h-full bg-[#0066FF] rounded-full" style={{ width: `${item.progress}%` }} />
+                      )}
+                      
+                      {item.progress !== undefined && (
+                        <div className="mt-2">
+                          <div className="flex justify-between text-[10px] font-bold text-[#64748B] mb-1">
+                            <span>Progress</span>
+                            <span>{item.progress}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                            <div className="h-full bg-[#0066FF] rounded-full" style={{ width: `${item.progress}%` }} />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
-                    {item.tracking && (
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F1F5F9]">
-                        <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#0A2540]">
-                          <Truck className="w-3.5 h-3.5 text-[#0066FF]" /> {item.tracking}
-                        </span>
-                      </div>
-                    )}
+                      )}
+                      
+                      {item.tracking && (
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F1F5F9]">
+                          <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#0A2540]">
+                            <Truck className="w-3.5 h-3.5 text-[#0066FF]" /> {item.tracking}
+                          </span>
+                        </div>
+                      )}
 
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
 
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
           
         </div>
       </div>

@@ -14,6 +14,8 @@ const CartPage = lazy(() => import('@/features/cart/pages/CartPage').then(module
 const CheckoutPage = lazy(() => import('@/features/cart/pages/CheckoutPage').then(module => ({ default: module.CheckoutPage })))
 const CheckoutConfirmationPage = lazy(() => import('@/features/cart/pages/CheckoutConfirmationPage').then(module => ({ default: module.CheckoutConfirmationPage })))
 
+const AiWorkspacePage = lazy(() => import('@/features/ai/pages/AiWorkspacePage').then(module => ({ default: module.AiWorkspacePage })))
+
 const DevPage = lazy(() => import('@/features/dev/pages/DevPage').then(module => ({ default: module.DevPage })))
 const NotFoundPage = lazy(() => import('@/shared/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
 const UnauthorizedPage = lazy(() => import('@/shared/pages/UnauthorizedPage').then(module => ({ default: module.UnauthorizedPage })))
@@ -37,6 +39,7 @@ export function AppRouter() {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
           <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
+          <Route path="/ai" element={<AiWorkspacePage />} />
           <Route element={<ProtectedRoute requireOnboarded={true} />}>
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />

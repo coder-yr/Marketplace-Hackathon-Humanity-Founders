@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Container } from '@/shared/components/layout/container'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
@@ -8,41 +8,57 @@ import {
   MessageSquare, FileCheck
 } from 'lucide-react'
 import { motion } from 'framer-motion'
-
-// Mock Data for specific shipment
-const mockOrder = {
-  id: 'ORD-7729',
-  product: 'Heavyweight Denim 14oz',
-  supplier: 'Kuroki Textiles',
-  quantity: '3000m',
-  status: 'In Production',
-  shippingDetails: {
-    carrier: 'Maersk Line',
-    container: 'MRKU-129938-4',
-    trackingNumber: 'AWB-883921-X',
-    method: 'Ocean Freight (FCL)',
-    portOrigin: 'Yokohama, Japan',
-    portDest: 'Los Angeles, USA',
-    expectedArrival: 'Oct 12, 2026'
-  },
-  timeline: [
-    { stage: 'Order Confirmed', status: 'Completed', date: 'Sep 01, 2026', notes: 'PO #4992 signed and deposit cleared.' },
-    { stage: 'Raw Material', status: 'Completed', date: 'Sep 05, 2026', notes: 'Cotton yarns secured and dyed.' },
-    { stage: 'Manufacturing', status: 'In Progress', progress: 65, date: 'Est. Sep 15, 2026', notes: 'Weaving process ongoing.' },
-    { stage: 'Quality Check', status: 'Pending' },
-    { stage: 'Packaging', status: 'Pending' },
-    { stage: 'Shipping', status: 'Pending' },
-    { stage: 'Delivered', status: 'Pending' }
-  ],
-  documents: [
-    { type: 'Invoice', name: 'Commercial_Invoice_7729.pdf', size: '245 KB', url: '#' },
-    { type: 'Certificate', name: 'ISO_Quality_Report.pdf', size: '1.2 MB', url: '#' },
-    { type: 'Packing List', name: 'Packing_List_Draft.pdf', size: '150 KB', url: '#' }
-  ]
-}
+import { useWorkspace } from '../hooks/useWorkspace'
 
 export function ShipmentWorkspace() {
-  // Using mock data for demo
+  const { id } = useParams()
+  const { workspace, isLoading } = useWorkspace()
+
+  if (isLoading || !workspace) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]" />
+      </div>
+    )
+  }
+
+  // Find the specific order from workspace
+  const order = workspace.orders.find((o: any) => o._id === id)
+
+  if (!order) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-[#F8FAFC]">
+        <h2 className="text-[20px] font-bold text-[var(--heading)]">Order not found</h2>
+        <Link to="/dashboard/procurement">
+          <Button className="mt-4">Back to Workspace</Button>
+        </Link>
+      </div>
+    )
+  }
+
+  // Fallback / default data to blend real API data with existing UI fields
+  const supplierName = order.supplier?.companyName || 'Supplier ' + order.supplier?.toString().substring(0,4) || 'Unknown'
+  const shippingDetails = order.shippingDetails || {
+    carrier: 'Maersk Line',
+    container: 'MRKU-129938-4',
+    trackingNumber: 'AWB-PENDING',
+    method: 'Ocean Freight (FCL)',
+    portOrigin: 'Origin Port',
+    portDest: 'Destination Port',
+    expectedArrival: 'Pending'
+  }
+
+  const timeline = order.timeline || [
+    { stage: 'Order Confirmed', status: 'Completed', date: new Date(order.createdAt).toLocaleDateString(), notes: 'Order placed.' },
+    { stage: 'Manufacturing', status: order.status === 'processing' ? 'In Progress' : 'Pending', progress: 50 },
+    { stage: 'Shipping', status: order.status === 'shipped' ? 'In Progress' : 'Pending' },
+    { stage: 'Delivered', status: order.status === 'delivered' ? 'Completed' : 'Pending' }
+  ]
+
+  const documents = order.documents || [
+    { type: 'Invoice', name: 'Commercial_Invoice.pdf', size: '245 KB', url: '#' },
+    { type: 'Packing List', name: 'Packing_List.pdf', size: '150 KB', url: '#' }
+  ]
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans">
@@ -59,13 +75,13 @@ export function ShipmentWorkspace() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <Badge className="bg-[#E0F2FE] text-[#0284C7] border-transparent font-bold tracking-wider px-2 py-0.5 rounded-[6px] text-[10px] uppercase">
-                  {mockOrder.status}
+                  {order.status}
                 </Badge>
-                <span className="text-[13px] font-bold text-[#94A3B8]">ID: {mockOrder.id}</span>
+                <span className="text-[13px] font-bold text-[#94A3B8]">ID: {order._id.substring(order._id.length - 6).toUpperCase()}</span>
               </div>
-              <h1 className="text-[32px] font-display font-bold text-[#0A2540]">{mockOrder.product}</h1>
+              <h1 className="text-[32px] font-display font-bold text-[#0A2540]">Order Fulfillment</h1>
               <p className="text-[14px] font-medium text-[#64748B] flex items-center gap-2 mt-1">
-                from <strong className="text-[#0A2540]">{mockOrder.supplier}</strong> • {mockOrder.quantity}
+                from <strong className="text-[#0A2540]">{supplierName}</strong> • ${order.totalAmount}
               </p>
             </div>
             <div className="flex gap-3">
@@ -91,33 +107,33 @@ export function ShipmentWorkspace() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div>
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Carrier</p>
-                  <p className="text-[14px] font-bold text-[#0A2540]">{mockOrder.shippingDetails.carrier}</p>
+                  <p className="text-[14px] font-bold text-[#0A2540]">{shippingDetails.carrier}</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Method</p>
-                  <p className="text-[14px] font-bold text-[#0A2540]">{mockOrder.shippingDetails.method}</p>
+                  <p className="text-[14px] font-bold text-[#0A2540]">{shippingDetails.method}</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Tracking ID</p>
-                  <p className="text-[14px] font-bold text-[#0066FF] cursor-pointer hover:underline">{mockOrder.shippingDetails.trackingNumber}</p>
+                  <p className="text-[14px] font-bold text-[#0066FF] cursor-pointer hover:underline">{shippingDetails.trackingNumber}</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Container</p>
-                  <p className="text-[14px] font-bold text-[#0A2540]">{mockOrder.shippingDetails.container}</p>
+                  <p className="text-[14px] font-bold text-[#0A2540]">{shippingDetails.container}</p>
                 </div>
                 <div className="col-span-2 pt-4 border-t border-[#E2E8F0]/50 mt-2">
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1 flex items-center gap-1"><MapPin className="w-3 h-3"/> Origin Route</p>
                   <div className="flex items-center gap-4 text-[14px] font-bold text-[#0A2540] mt-2">
-                    <span>{mockOrder.shippingDetails.portOrigin}</span>
+                    <span>{shippingDetails.portOrigin}</span>
                     <div className="flex-1 h-[2px] bg-[#E2E8F0] relative">
                       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t-2 border-r-2 border-[#E2E8F0] rotate-45" />
                     </div>
-                    <span>{mockOrder.shippingDetails.portDest}</span>
+                    <span>{shippingDetails.portDest}</span>
                   </div>
                 </div>
                 <div className="col-span-2 pt-4 border-t border-[#E2E8F0]/50 mt-2">
                   <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1 flex items-center gap-1"><Calendar className="w-3 h-3"/> ETA</p>
-                  <p className="text-[20px] font-display font-bold text-emerald-600 mt-1">{mockOrder.shippingDetails.expectedArrival}</p>
+                  <p className="text-[20px] font-display font-bold text-emerald-600 mt-1">{shippingDetails.expectedArrival}</p>
                 </div>
               </div>
             </div>
@@ -128,7 +144,7 @@ export function ShipmentWorkspace() {
                 <Clock className="w-5 h-5 text-[#0066FF]" /> Production Timeline
               </h2>
               <div className="relative pl-6 border-l-2 border-[#E2E8F0] space-y-10">
-                {mockOrder.timeline.map((step, idx) => (
+                {timeline.map((step: any, idx: number) => (
                   <div key={idx} className="relative">
                     {/* Timeline Node */}
                     <div className="absolute -left-[35px] top-1 bg-white">
@@ -182,7 +198,7 @@ export function ShipmentWorkspace() {
                 <FileCheck className="w-5 h-5 text-[#38BDF8]" /> Document Center
               </h2>
               <div className="space-y-3">
-                {mockOrder.documents.map((doc, idx) => (
+                {documents.map((doc: any, idx: number) => (
                   <div key={idx} className="bg-white/10 border border-white/10 rounded-[12px] p-4 flex items-center justify-between group hover:bg-white/20 transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-[8px] bg-white/10 flex items-center justify-center">

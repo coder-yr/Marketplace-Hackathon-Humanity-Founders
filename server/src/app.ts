@@ -13,12 +13,14 @@ import { healthRouter } from './routes/health.routes'
 import { categoryRouter } from './routes/category.routes'
 import { productRouter } from './routes/product.routes'
 import aiRoutes from './routes/ai.routes'
+import enterpriseAiRoutes from './ai/routes/ai.routes'
 import { notificationRouter } from './routes/notification.routes'
 import { rfqRouter } from './routes/rfq.routes'
 import { quoteRouter } from './routes/quote.routes'
 import { orderRouter } from './routes/order.routes'
 import { messageRouter } from './routes/message.routes'
 import { cartRouter } from './routes/cart.routes'
+import { workspaceRouter } from './routes/workspace.routes'
 
 const app = express()
 
@@ -57,12 +59,14 @@ app.use('/api/categories', categoryRouter)
 app.use('/api/products', productRouter)
 app.use('/api/profiles', profileRoutes)
 app.use('/api/ai', aiRoutes)
+app.use('/api/ai', enterpriseAiRoutes)
 app.use('/api/notifications', notificationRouter)
 app.use('/api/rfqs', rfqRouter)
 app.use('/api/quotes', quoteRouter)
 app.use('/api/orders', orderRouter)
 app.use('/api/messages', messageRouter)
 app.use('/api/cart', cartRouter)
+app.use('/api/workspace', workspaceRouter)
 
 // ── Error Handling ────────────────────────────────────────────────
 app.use(notFoundHandler)

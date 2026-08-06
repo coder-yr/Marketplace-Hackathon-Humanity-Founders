@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { User, AuthResponse } from '../types/auth.types'
 import { api } from '../../../lib/axios'
+import { useWorkspaceStore } from '../../dashboard/store/workspace.store'
 
 interface AuthState {
   user: User | null
@@ -11,7 +12,7 @@ interface AuthState {
   // Actions
   setAuth: (response: AuthResponse) => void
   logout: () => void
-  initialize: () => Promise<void>
+  initialize: (force?: boolean) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,16 +30,17 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        useWorkspaceStore.getState().clearWorkspace()
         set({
           user: null,
           isAuthenticated: false,
         })
       },
 
-      initialize: async () => {
-        // Only run initialization once
+      initialize: async (force = false) => {
+        // Only run initialization once unless forced
         const state = get()
-        if (state.isInitialized) return
+        if (state.isInitialized && !force) return
 
         try {
           const response = await api.get('/auth/me')

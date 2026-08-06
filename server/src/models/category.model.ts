@@ -68,7 +68,7 @@ const categorySchema = new Schema<ICategory>(
   },
 )
 
-categorySchema.index({ slug: 1 }, { unique: true })
+
 categorySchema.index({ isActive: 1 })
 categorySchema.index({ featured: 1 })
 categorySchema.index({ sortOrder: 1 })

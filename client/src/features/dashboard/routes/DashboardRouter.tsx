@@ -8,6 +8,9 @@ import { AnalyticsDashboard } from '../pages/AnalyticsDashboard'
 import { ActivityFeed } from '../pages/ActivityFeed'
 import { BuyerOverview } from '../pages/BuyerOverview'
 import { SupplierOverview } from '../pages/SupplierOverview'
+import { SettingsPage } from '../pages/SettingsPage'
+import { ProductsPage } from '../pages/ProductsPage'
+import { AddProductWizard } from '../pages/AddProductWizard'
 
 export function DashboardRouter() {
   const { user } = useAuthStore()
@@ -25,9 +28,11 @@ export function DashboardRouter() {
         <Route path="/procurement" element={<ProcurementWorkspace />} />
         <Route path="/rfqs/:id" element={<RfqWorkspace />} />
         <Route path="/orders/:id" element={<ShipmentWorkspace />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/new" element={<AddProductWizard />} />
         <Route path="/analytics" element={<AnalyticsDashboard />} />
         <Route path="/activity" element={<ActivityFeed />} />
-        <Route path="/settings" element={<div className="p-12 text-center text-[#64748B] font-bold">Settings Coming Soon</div>} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/dashboard/overview" replace />} />
       </Route>
     </Routes>

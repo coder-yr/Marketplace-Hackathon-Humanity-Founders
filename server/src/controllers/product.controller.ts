@@ -102,6 +102,22 @@ export class ProductController {
       next(error)
     }
   }
+
+  async duplicateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user || req.user.role !== 'supplier') {
+        throw new AppError('Only authenticated suppliers can duplicate products', 403)
+      }
+      const productId = req.params.id as string
+      const newProduct = await productService.duplicateProduct(req.user._id.toString(), productId)
+      res.status(201).json({
+        success: true,
+        data: newProduct,
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export const productController = new ProductController()

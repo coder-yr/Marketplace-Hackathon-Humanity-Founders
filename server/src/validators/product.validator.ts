@@ -1,31 +1,41 @@
 import { z } from 'zod'
 
+const productCore = z.object({
+  title: z.string(),
+  shortDescription: z.string(),
+  description: z.string(),
+  category: z.string(),
+  subCategory: z.string().optional(),
+  fabricType: z.string(),
+  images: z.array(z.string()),
+  priceRange: z.object({
+    min: z.number(),
+    max: z.number(),
+    currency: z.string().default('USD'),
+    unit: z.string().default('meter'),
+  }),
+  moq: z.object({
+    value: z.number(),
+    unit: z.string().default('meters'),
+  }),
+  leadTime: z.string(),
+  stockStatus: z.enum(['in_stock', 'made_to_order', 'out_of_stock']).default('made_to_order'),
+  variants: z.array(z.object({
+    color: z.string(),
+    image: z.string().optional(),
+    stock: z.number().default(0)
+  })).optional().default([]),
+  certifications: z.array(z.string()).optional().default([]),
+  tags: z.array(z.string()).optional().default([]),
+  specifications: z.record(z.string(), z.string()).optional().default({}),
+  featured: z.boolean().optional().default(false),
+  published: z.boolean().optional().default(false),
+})
+
 export const createProductSchema = z.object({
-  body: z.object({
-    title: z.string().min(3, 'Title must be at least 3 characters').max(200),
-    shortDescription: z.string().min(10).max(300),
-    description: z.string().min(20),
-    category: z.string().min(1, 'Category ID is required'),
-    subCategory: z.string().optional(),
-    fabricType: z.string().min(2, 'Fabric type is required'),
-    images: z.array(z.string().url('Invalid image URL')).min(1, 'At least one image is required'),
-    priceRange: z.object({
-      min: z.number().min(0),
-      max: z.number().min(0),
-      currency: z.string().default('USD'),
-      unit: z.string().default('meter'),
-    }),
-    moq: z.object({
-      value: z.number().min(1),
-      unit: z.string().default('meters'),
-    }),
-    leadTime: z.string().min(1),
-    stockStatus: z.enum(['in_stock', 'made_to_order', 'out_of_stock']).default('made_to_order'),
-    certifications: z.array(z.string()).optional().default([]),
-    tags: z.array(z.string()).optional().default([]),
-    specifications: z.record(z.string(), z.string()).optional().default({}),
-    featured: z.boolean().optional().default(false),
-    published: z.boolean().optional().default(true),
+  body: productCore.partial().extend({
+    title: z.string(),
+    status: z.enum(['active', 'draft', 'ready_for_review', 'archived', 'rejected']).default('draft')
   }),
 })
 
@@ -33,7 +43,9 @@ export const updateProductSchema = z.object({
   params: z.object({
     id: z.string().min(1),
   }),
-  body: createProductSchema.shape.body.partial(),
+  body: productCore.partial().extend({
+    status: z.enum(['active', 'draft', 'ready_for_review', 'archived', 'rejected']).optional()
+  }),
 })
 
 export const productQuerySchema = z.object({

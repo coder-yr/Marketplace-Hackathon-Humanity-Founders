@@ -12,5 +12,6 @@ productRouter.get('/:idOrSlug', productController.getProductBySlugOrId)
 
 // Protected supplier endpoints
 productRouter.post('/', requireAuth, requireRole(['supplier']), productController.createProduct)
+productRouter.post('/:id/duplicate', requireAuth, requireRole(['supplier']), productController.duplicateProduct)
 productRouter.put('/:id', requireAuth, requireRole(['supplier']), productController.updateProduct)
 productRouter.delete('/:id', requireAuth, requireRole(['supplier']), productController.deleteProduct)

@@ -106,6 +106,33 @@ export class ProductService {
 
     return await productRepository.softDelete(productId)
   }
+
+  async duplicateProduct(supplierId: string, productId: string) {
+    const existing = await productRepository.findByIdOrSlug(productId)
+    if (!existing) {
+      throw new AppError('Product not found', 404)
+    }
+
+    const existingSupplierId = (existing.supplierId as any)._id
+      ? (existing.supplierId as any)._id.toString()
+      : existing.supplierId.toString()
+
+    if (existingSupplierId !== supplierId) {
+      throw new AppError('Unauthorized: You can only duplicate your own products', 403)
+    }
+
+    const duplicateData = existing.toObject()
+    delete duplicateData._id
+    delete duplicateData.slug
+    delete duplicateData.createdAt
+    delete duplicateData.updatedAt
+
+    duplicateData.title = `${duplicateData.title} (Copy)`
+    duplicateData.status = 'draft'
+    duplicateData.published = false
+
+    return await this.createProduct(supplierId, duplicateData as any)
+  }
 }
 
 export const productService = new ProductService()

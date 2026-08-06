@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { useCartStore } from '@/features/cart/store/cart.store'
@@ -8,10 +8,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/shared/components/ui/button'
 
 export function MainLayout({ children }: { children?: React.ReactNode }) {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user, logout } = useAuthStore()
   const { items, fetchCart } = useCartStore()
   const totalItemsCount = items.length
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'buyer') {
@@ -43,13 +49,13 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
           <div className="flex-1 max-w-[600px] hidden md:block">
             <button 
               onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-              className="w-full h-11 px-5 rounded-full bg-[#1E293B] hover:bg-[#334155] border border-[#334155] text-[#94A3B8] flex items-center justify-between transition-colors text-[14px]"
+              className="w-full h-11 px-5 rounded-full bg-[#1E293B] hover:bg-[#334155] border border-[#334155] text-[#94A3B8] flex items-center justify-between transition-colors text-[14px] min-w-0"
             >
-              <div className="flex items-center gap-3">
-                <Search className="w-4 h-4" />
-                <span className="font-medium">Search for Fabrics, Mills...</span>
+              <div className="flex items-center gap-3 overflow-hidden min-w-0 mr-2">
+                <Search className="w-4 h-4 shrink-0" />
+                <span className="font-medium whitespace-nowrap truncate">Search for Fabrics, Mills...</span>
               </div>
-              <div className="flex items-center gap-1 bg-[#0A2540] px-2 py-1 rounded-[6px] border border-[#334155]">
+              <div className="flex items-center gap-1 bg-[#0A2540] px-2 py-1 rounded-[6px] border border-[#334155] shrink-0">
                 <Command className="w-3 h-3" />
                 <span className="text-[10px] font-bold">K</span>
               </div>
@@ -60,10 +66,18 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
 
           {/* Right Actions */}
           <div className="flex items-center gap-5 shrink-0">
-            <div className="hidden lg:flex items-center gap-2 text-white text-[13px] font-bold bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
-              <Zap className="w-4 h-4 text-[#FDE047] fill-[#FDE047]" />
-              <span>Source now and get instant <span className="text-[#FDE047]">RFQs</span></span>
-            </div>
+          {/* Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-6 text-[14px] font-bold text-white/80">
+            <Link to="/" className="hover:text-white transition-colors">Discover</Link>
+            <Link to="/marketplace" className="hover:text-white transition-colors">Materials</Link>
+            <Link to="/marketplace?filter=verified" className="hover:text-white transition-colors">Suppliers</Link>
+            <Link to="/dashboard/procurement" className="hover:text-white transition-colors">RFQs</Link>
+            <Link to="/dashboard/procurement" className="hover:text-white transition-colors">Orders</Link>
+            <Link to="/dashboard/analytics" className="hover:text-white transition-colors">Analytics</Link>
+            <Link to="/ai" className="text-[#38BDF8] flex items-center gap-1 hover:text-white transition-colors">
+              <Zap className="w-3.5 h-3.5 fill-current" /> AI Copilot
+            </Link>
+          </nav>
 
             {isAuthenticated && (
               <>
@@ -88,11 +102,26 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
 
             <div className="flex items-center gap-4">
               {isAuthenticated ? (
-                <Link to="/dashboard">
-                  <div className="w-10 h-10 rounded-full bg-white overflow-hidden border-2 border-white/20 cursor-pointer hover:border-white/40 transition-colors">
-                    <img src={`https://ui-avatars.com/api/?name=User&background=0066FF&color=fff&bold=true`} alt="User" className="w-full h-full object-cover" />
+                <div className="relative group">
+                  <Link to="/dashboard">
+                    <div className="w-10 h-10 rounded-full bg-white overflow-hidden border-2 border-white/20 cursor-pointer hover:border-white/40 transition-colors">
+                      <img src={`https://ui-avatars.com/api/?name=${user?.fullName || 'User'}&background=0066FF&color=fff&bold=true`} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                  </Link>
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[12px] shadow-lg border border-[var(--border)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                    <div className="px-4 py-2 border-b border-[#E2E8F0] mb-1">
+                      <p className="text-[13px] font-bold text-[var(--heading)] truncate">{user?.fullName}</p>
+                      <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{user?.role}</p>
+                    </div>
+                    <Link to="/dashboard" className="block px-4 py-2 text-[14px] text-[var(--heading)] hover:bg-[#F8FAFC] font-bold transition-colors">Go to Dashboard</Link>
+                    <button 
+                      onClick={handleLogout} 
+                      className="w-full text-left px-4 py-2 text-[14px] text-[#DC2626] hover:bg-[#FEF2F2] font-bold transition-colors"
+                    >
+                      Logout
+                    </button>
                   </div>
-                </Link>
+                </div>
               ) : (
                 <Link to="/login">
                   <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20 cursor-pointer flex items-center justify-center text-white">
@@ -155,14 +184,14 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
               <ul className="space-y-3 text-[13px] text-[var(--body)] font-medium">
                 <li><Link to="/marketplace" className="hover:text-[var(--primary)] transition-colors">Browse Materials</Link></li>
                 <li><Link to="/categories" className="hover:text-[var(--primary)] transition-colors">Categories</Link></li>
-                <li><Link to="/rfq" className="hover:text-[var(--primary)] transition-colors">Submit RFQ</Link></li>
+                <li><Link to="/dashboard/procurement" className="hover:text-[var(--primary)] transition-colors">Submit RFQ</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-[var(--heading)] mb-5 text-[14px]">Suppliers</h4>
               <ul className="space-y-3 text-[13px] text-[var(--body)] font-medium">
-                <li><Link to="/suppliers" className="hover:text-[var(--primary)] transition-colors">Verified Mills</Link></li>
+                <li><Link to="/marketplace?filter=verified" className="hover:text-[var(--primary)] transition-colors">Verified Mills</Link></li>
                 <li><Link to="/apply" className="hover:text-[var(--primary)] transition-colors">Become a Supplier</Link></li>
                 <li><Link to="/guidelines" className="hover:text-[var(--primary)] transition-colors">Guidelines</Link></li>
               </ul>

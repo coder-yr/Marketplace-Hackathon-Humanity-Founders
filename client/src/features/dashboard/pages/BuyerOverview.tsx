@@ -1,18 +1,39 @@
+import { useEffect } from 'react'
 import { Card } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
-import { FileText, ShoppingBag, Bookmark, MessageSquare, Bell, Sparkles, Zap, ArrowRight, TrendingUp } from 'lucide-react'
+import { FileText, ShoppingBag, Bookmark, MessageSquare, Bell, Sparkles, Zap, ArrowRight, AlertTriangle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { transitionCard, transitionFast } from '@/shared/animations'
-
-const KPI_CARDS = [
-  { title: 'Active RFQs', value: '12', change: '+2 this week', icon: FileText, trend: 'up' },
-  { title: 'Quotes Received', value: '48', change: '8 pending review', icon: MessageSquare, trend: 'neutral' },
-  { title: 'Active Orders', value: '3', change: '1 shipping soon', icon: ShoppingBag, trend: 'neutral' },
-  { title: 'Saved Suppliers', value: '24', change: '+5 this month', icon: Bookmark, trend: 'up' },
-]
+import { useWorkspace } from '../hooks/useWorkspace'
+import { formatDistanceToNow } from 'date-fns'
+import { useNavigate } from 'react-router-dom'
 
 export function BuyerOverview() {
+  const { workspace, isLoading, refresh } = useWorkspace()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    refresh()
+  }, [])
+
+  if (isLoading || !workspace) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]" />
+      </div>
+    )
+  }
+
+  const { stats, rfqs, orders, activities, aiInsights } = workspace
+
+  const KPI_CARDS = [
+    { title: 'Active RFQs', value: stats.activeRfqs.toString(), change: 'In progress', icon: FileText, trend: 'neutral' },
+    { title: 'Quotes Received', value: stats.quotesReceived.toString(), change: 'Pending review', icon: MessageSquare, trend: 'neutral' },
+    { title: 'Active Orders', value: stats.activeOrders.toString(), change: 'In fulfillment', icon: ShoppingBag, trend: 'neutral' },
+    { title: 'Saved Suppliers', value: stats.savedSuppliers.toString(), change: 'Vetted partners', icon: Bookmark, trend: 'neutral' },
+  ]
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -22,8 +43,8 @@ export function BuyerOverview() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[28px] font-display font-bold text-[var(--heading)] mb-1">Procurement Dashboard</h1>
-          <p className="text-[14px] font-medium text-[var(--body)]">Manage your entire sourcing lifecycle from RFQ to Delivery.</p>
+          <h1 className="text-[28px] font-display font-bold text-[var(--heading)] mb-1">Procurement Command Center</h1>
+          <p className="text-[14px] font-medium text-[var(--body)]">Manage your entire enterprise sourcing lifecycle from RFQ to Delivery.</p>
         </div>
         <Button size="sm" className="h-10 px-5 bg-[var(--heading)] hover:bg-[#1E293B] text-white rounded-[10px] shadow-sm font-bold">
           <Sparkles className="w-4 h-4 mr-2" /> Start AI Sourcing
@@ -42,10 +63,8 @@ export function BuyerOverview() {
               </div>
               <div className="z-10">
                 <div className="text-[32px] font-display font-bold text-[var(--heading)] mb-1 tracking-tight leading-none">{kpi.value}</div>
-                <div className="flex items-center gap-1.5 text-[12px] font-bold">
-                  <span className={kpi.change.includes('+') ? 'text-[var(--success)]' : 'text-[var(--body)]'}>
-                    {kpi.change}
-                  </span>
+                <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#94A3B8]">
+                  <span>{kpi.change}</span>
                 </div>
               </div>
             </Card>
@@ -67,80 +86,88 @@ export function BuyerOverview() {
             <Button variant="ghost" size="sm" className="h-8 text-[12px] font-bold text-[var(--body)] hover:text-[var(--heading)]">View All</Button>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <div className="divide-y divide-[var(--border)]">
-              {[
-                { id: 'RFQ-8829', item: 'Organic Cotton Jersey 180GSM', supplier: 'EcoTextiles Ltd', status: 'Quoted', replies: 3, time: '2 hours ago' },
-                { id: 'RFQ-8828', item: 'Heavyweight Raw Denim 14oz', supplier: 'Rajeev Textiles', status: 'Pending', replies: 0, time: '1 day ago' },
-                { id: 'RFQ-8827', item: 'Silk Charmeuse 19mm', supplier: 'Hangzhou Silk Co', status: 'Negotiating', replies: 5, time: '2 days ago' },
-                { id: 'RFQ-8826', item: 'Recycled Polyester', supplier: 'Global Weaves', status: 'Pending', replies: 0, time: '3 days ago' },
-              ].map((rfq, i) => (
-                <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center text-[12px] font-bold text-[var(--body)] border border-[var(--border)]">
-                      {rfq.id.split('-')[1]}
+            {rfqs.length === 0 ? (
+               <div className="flex flex-col items-center justify-center h-full text-[#94A3B8]">
+                 <FileText className="w-8 h-8 mb-2 opacity-50" />
+                 <p className="text-[13px] font-bold">No active RFQs</p>
+               </div>
+            ) : (
+              <div className="divide-y divide-[var(--border)]">
+                {rfqs.map((rfq) => (
+                  <div key={rfq._id} className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center text-[12px] font-bold text-[var(--body)] border border-[var(--border)] uppercase">
+                        {rfq._id.substring(rfq._id.length - 4)}
+                      </div>
+                      <div>
+                        <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">{rfq.title}</h4>
+                        <p className="text-[12px] font-medium text-[var(--body)]">
+                          {rfq.targetPrice ? `$${rfq.targetPrice}/m` : 'Open Price'} <span className="mx-1 opacity-50">•</span> 
+                          {formatDistanceToNow(new Date(rfq.createdAt), { addSuffix: true })}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">{rfq.item}</h4>
-                      <p className="text-[12px] font-medium text-[var(--body)]">{rfq.supplier} <span className="mx-1 opacity-50">•</span> {rfq.time}</p>
+                    <div className="flex items-center gap-4">
+                      <Badge className={`w-24 justify-center text-[11px] font-bold uppercase tracking-wider ${
+                        rfq.status === 'quoted' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20' : 
+                        rfq.status === 'pending' || rfq.status === 'published' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' : 
+                        'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20'
+                      }`}>
+                        {rfq.status}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest hidden sm:block">{rfq.replies} Replies</div>
-                    <Badge className={`w-24 justify-center text-[11px] font-bold uppercase tracking-wider ${
-                      rfq.status === 'Quoted' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20' : 
-                      rfq.status === 'Pending' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' : 
-                      'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20'
-                    }`}>
-                      {rfq.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </Card>
 
-        {/* Table 2: Saved Suppliers */}
+        {/* Table 2: Recent Orders */}
         <Card className="p-0 shadow-sm border border-[var(--border)] bg-white overflow-hidden flex flex-col h-[360px] rounded-[24px]">
           <div className="px-6 py-5 border-b border-[var(--border)] flex justify-between items-center bg-[#F8FAFC]">
             <div>
               <h3 className="font-bold text-[var(--heading)] text-[15px] flex items-center gap-2">
-                <Bookmark className="w-4 h-4 text-[var(--primary)]" /> Saved Suppliers
+                <ShoppingBag className="w-4 h-4 text-[var(--primary)]" /> Recent Orders
               </h3>
             </div>
-            <Button variant="ghost" size="sm" className="h-8 text-[12px] font-bold text-[var(--body)] hover:text-[var(--heading)]">Manage List</Button>
+            <Button variant="ghost" size="sm" className="h-8 text-[12px] font-bold text-[var(--body)] hover:text-[var(--heading)]" onClick={() => navigate('/dashboard/procurement')}>View All</Button>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <div className="divide-y divide-[var(--border)]">
-              {[
-                { name: 'EcoTextiles Ltd', origin: 'India', certs: ['GOTS', 'ISO 9001'], rating: 4.9 },
-                { name: 'Rajeev Textiles', origin: 'India', certs: ['OEKO-TEX'], rating: 4.7 },
-                { name: 'Hangzhou Silk Co', origin: 'China', certs: ['ISO 9001'], rating: 4.8 },
-                { name: 'Kuroki Textiles', origin: 'Japan', certs: ['GOTS'], rating: 5.0 },
-              ].map((supplier, i) => (
-                <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-[10px] bg-[var(--heading)] text-white flex items-center justify-center text-[14px] font-bold shadow-sm">
-                      {supplier.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">{supplier.name}</h4>
-                      <div className="flex items-center gap-2 text-[12px] text-[var(--body)] font-medium">
-                        <span>{supplier.origin}</span> <span className="opacity-50">•</span> 
-                        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-[var(--success)]" /> {supplier.rating}</span>
+            {orders.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-[#94A3B8]">
+                <ShoppingBag className="w-8 h-8 mb-2 opacity-50" />
+                <p className="text-[13px] font-bold">No recent orders</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--border)]">
+                {orders.slice(0, 5).map((order) => (
+                  <div key={order._id} className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer" onClick={() => navigate('/dashboard/procurement')}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center text-[12px] font-bold text-[var(--body)] border border-[var(--border)] uppercase">
+                        {order._id.substring(order._id.length - 4)}
+                      </div>
+                      <div>
+                        <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">Order #{order._id.substring(order._id.length - 4)}</h4>
+                        <div className="flex items-center gap-2 text-[12px] text-[var(--body)] font-medium">
+                          <span>${order.finalPrice * order.quantity}</span> <span className="opacity-50">•</span> 
+                          <span>{formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}</span>
+                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-4">
+                      <Badge className={`w-24 justify-center text-[11px] font-bold uppercase tracking-wider ${
+                        order.status.toLowerCase() === 'delivered' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20' : 
+                        order.status.toLowerCase() === 'pending' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' : 
+                        'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20'
+                      }`}>
+                        {order.status}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex gap-1.5 hidden sm:flex">
-                    {supplier.certs.map(cert => (
-                      <span key={cert} className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest rounded-[6px] border border-[var(--border)] bg-[#F8FAFC] text-[var(--body)]">
-                        {cert}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </Card>
 
@@ -152,26 +179,21 @@ export function BuyerOverview() {
         {/* Timeline (Notifications) */}
         <Card className="p-6 shadow-sm border border-[var(--border)] bg-white flex flex-col h-[320px] rounded-[24px]">
           <h3 className="font-bold text-[var(--heading)] text-[15px] mb-6 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-[var(--primary)]" /> Order Status
+            <Bell className="w-4 h-4 text-[var(--primary)]" /> Activity Feed
           </h3>
           <div className="relative pl-4 border-l border-[var(--border)] space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            <div className="relative">
-              <div className="absolute w-2.5 h-2.5 rounded-full bg-[var(--success)] -left-[22px] top-1.5 ring-4 ring-white" />
-              <h4 className="text-[13px] font-bold text-[var(--heading)]">Order ORD-9921 Shipped</h4>
-              <p className="text-[12px] font-medium text-[var(--body)] mt-1">200m Organic Cotton shipped via DHL.</p>
-              <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mt-1 block">Today, 10:42 AM</span>
-            </div>
-            <div className="relative">
-              <div className="absolute w-2.5 h-2.5 rounded-full bg-[var(--primary)] -left-[22px] top-1.5 ring-4 ring-white" />
-              <h4 className="text-[13px] font-bold text-[var(--heading)]">Payment Escrowed</h4>
-              <p className="text-[12px] font-medium text-[var(--body)] mt-1">Funds secured for ORD-9922 (Denim).</p>
-              <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mt-1 block">Yesterday, 3:15 PM</span>
-            </div>
-            <div className="relative">
-              <div className="absolute w-2.5 h-2.5 rounded-full bg-[#CBD5E1] -left-[22px] top-1.5 ring-4 ring-white" />
-              <h4 className="text-[13px] font-bold text-[var(--body)]">Awaiting Production</h4>
-              <p className="text-[12px] font-medium text-[#94A3B8] mt-1">ORD-9923 scheduled for next week.</p>
-            </div>
+            {activities.length === 0 ? (
+               <div className="text-[13px] font-bold text-[#94A3B8] -ml-4 text-center mt-8">No recent activity</div>
+            ) : activities.map((activity, i) => (
+              <div key={activity.id || i} className="relative">
+                <div className="absolute w-2.5 h-2.5 rounded-full bg-[var(--primary)] -left-[22px] top-1.5 ring-4 ring-white" />
+                <h4 className="text-[13px] font-bold text-[var(--heading)]">{activity.title}</h4>
+                <p className="text-[12px] font-medium text-[var(--body)] mt-1">{activity.description}</p>
+                <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mt-1 block">
+                  {formatDistanceToNow(new Date(activity.date), { addSuffix: true })}
+                </span>
+              </div>
+            ))}
           </div>
         </Card>
 
@@ -185,20 +207,37 @@ export function BuyerOverview() {
             <h3 className="font-bold text-[var(--heading)] text-[15px]">AI Sourcing Insights</h3>
           </div>
           <div className="space-y-4 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            <div className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
-              <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[var(--primary)]">Alternative Found</Badge>
-              <h4 className="text-[13px] font-bold text-[var(--heading)] mb-1">Bamboo Lyocell</h4>
-              <p className="text-[12px] font-medium text-[var(--body)] leading-relaxed">
-                A sustainable alternative to your recently searched viscose, available at $3.20/m from 2 verified suppliers.
-              </p>
-            </div>
-            <div className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
-              <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[#F59E0B]">Price Drop</Badge>
-              <h4 className="text-[13px] font-bold text-[var(--heading)] mb-1">French Terry 400GSM</h4>
-              <p className="text-[12px] font-medium text-[var(--body)] leading-relaxed">
-                A supplier in your saved list has dropped their MOQ to 100m.
-              </p>
-            </div>
+            
+            {aiInsights?.marketTrend && (
+               <div className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
+               <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[var(--primary)]">Market Trend</Badge>
+               <h4 className="text-[13px] font-bold text-[var(--heading)] mb-1">Price {aiInsights.marketTrend.direction === 'up' ? 'Increase' : 'Decrease'} Expected</h4>
+               <p className="text-[12px] font-medium text-[var(--body)] leading-relaxed">
+                 {aiInsights.marketTrend.description}
+               </p>
+             </div>
+            )}
+           
+            {aiInsights?.costSavings?.map((saving, i) => (
+              <div key={i} className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
+                <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[var(--border)] text-[var(--success)]">Cost Saving</Badge>
+                <h4 className="text-[13px] font-bold text-[var(--heading)] mb-1">{saving.opportunity}</h4>
+                <p className="text-[12px] font-medium text-[var(--body)] leading-relaxed">
+                  Estimated savings: ${saving.estimatedSavings}
+                </p>
+              </div>
+            ))}
+
+            {aiInsights?.riskAlerts?.map((alert, i) => (
+              <div key={i} className="bg-[#F8FAFC] border border-[var(--border)] rounded-[16px] p-4 shadow-sm hover:border-[var(--primary)]/30 transition-colors">
+                <Badge className="mb-2 text-[9px] font-bold uppercase tracking-widest bg-white border border-[#F59E0B]/30 text-[#F59E0B]">
+                  <AlertTriangle className="w-3 h-3 mr-1 inline" /> Risk Alert
+                </Badge>
+                <p className="text-[12px] font-medium text-[var(--body)] leading-relaxed">
+                  {alert.message}
+                </p>
+              </div>
+            ))}
           </div>
         </Card>
 

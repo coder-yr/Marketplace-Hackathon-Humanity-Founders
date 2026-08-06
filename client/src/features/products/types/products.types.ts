@@ -68,6 +68,7 @@ export interface Product {
   moq: Moq
   leadTime: string
   stockStatus: 'in_stock' | 'made_to_order' | 'out_of_stock'
+  aiScore?: number
   certifications: string[]
   tags: string[]
   specifications: Record<string, string>

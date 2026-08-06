@@ -32,4 +32,34 @@ export const productsApi = {
     const response = await api.get(`/categories/${slug}`)
     return response.data
   },
+
+  createProduct: async (data: Partial<Product>): Promise<{ success: boolean; data: Product }> => {
+    const response = await api.post('/products', data)
+    return response.data
+  },
+
+  updateProduct: async (id: string, data: Partial<Product>): Promise<{ success: boolean; data: Product }> => {
+    const response = await api.put(`/products/${id}`, data)
+    return response.data
+  },
+
+  deleteProduct: async (id: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.delete(`/products/${id}`)
+    return response.data
+  },
+
+  duplicateProduct: async (id: string): Promise<{ success: boolean; data: Product }> => {
+    const response = await api.post(`/products/${id}/duplicate`)
+    return response.data
+  },
+
+  archiveProduct: async (id: string): Promise<{ success: boolean; data: Product }> => {
+    const response = await api.put(`/products/${id}`, { status: 'archived' })
+    return response.data
+  },
+
+  publishProduct: async (id: string): Promise<{ success: boolean; data: Product }> => {
+    const response = await api.put(`/products/${id}`, { status: 'active', published: true })
+    return response.data
+  },
 }
