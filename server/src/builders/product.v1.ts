@@ -1,16 +1,21 @@
 export const ProductIntelligenceBuilderV1 = {
   version: 'product.v1',
   buildPrompt: (product: any, supplier: any) => {
+    const safeStringify = (obj: any, limit = 15000) => {
+      const str = JSON.stringify(obj, null, 2) || '';
+      return str.length > limit ? str.substring(0, limit) + '\n... [TRUNCATED]' : str;
+    };
+
     const systemPrompt = `You are an expert AI Procurement Analyst.
 You are given a product specification and its supplier profile.
 You must return a strict JSON object mapping exactly to the ProductIntelligenceSchema.
 Do not wrap your output in markdown blocks. Return raw JSON.`
 
     const userPrompt = `Product Specifications:
-${JSON.stringify(product, null, 2)}
+${safeStringify(product)}
 
 Supplier Profile:
-${JSON.stringify(supplier, null, 2)}
+${safeStringify(supplier)}
 
 Analyze this product for an enterprise buyer. Provide:
 1. material (score out of 100, summary, bestApplications, advantages, limitations)
