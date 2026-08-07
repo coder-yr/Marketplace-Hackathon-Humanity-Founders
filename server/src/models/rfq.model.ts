@@ -9,7 +9,7 @@ export interface IRfq extends Document {
   deliveryAddress?: string
   timeline?: string
   notes?: string
-  status: 'Draft' | 'Submitted' | 'Viewed' | 'Responded' | 'Accepted' | 'Rejected' | 'Expired'
+  status: 'Draft' | 'Submitted' | 'Viewed' | 'Responded' | 'Quoted' | 'Accepted' | 'Rejected' | 'Expired'
   createdAt: Date
   updatedAt: Date
 }
@@ -49,7 +49,7 @@ const rfqSchema = new Schema<IRfq>(
     },
     status: {
       type: String,
-      enum: ['Draft', 'Submitted', 'Viewed', 'Responded', 'Accepted', 'Rejected', 'Expired'],
+      enum: ['Draft', 'Submitted', 'Viewed', 'Responded', 'Quoted', 'Accepted', 'Rejected', 'Expired'],
       default: 'Submitted',
     },
   },

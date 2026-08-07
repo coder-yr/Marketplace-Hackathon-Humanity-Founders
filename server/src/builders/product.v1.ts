@@ -19,10 +19,12 @@ ${safeStringify(supplier)}
 
 Analyze this product for an enterprise buyer. Provide:
 1. material (score out of 100, summary, bestApplications, advantages, limitations)
-2. supplier (trustScore, responseRate, reliability)
-3. comparison (winner: "Current Supplier" or "Alternative", estimatedSavings, comparison array of alternatives)
-4. market (marketValue, priceTrend, demand)
+2. supplier (trustScore out of 100, responseRate, reliability)
+3. comparison (winner: "Current Supplier" or "Alternative", estimatedSavings as a realistic numeric string like "1500" or "420", comparison array of alternatives)
+4. market (marketValue as a score out of 100 representing market attractiveness, priceTrend, demand)
 5. procurement (risk: "LOW"|"MEDIUM"|"HIGH", confidence: 0-100)
+
+CRITICAL: Never return 0 or "0" for scores or savings. Always estimate a realistic number based on the product.
 `
 
     return { systemPrompt, userPrompt, prompt: systemPrompt + '\n\n' + userPrompt }

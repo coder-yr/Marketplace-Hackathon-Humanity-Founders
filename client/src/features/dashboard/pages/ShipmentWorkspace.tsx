@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button'
 import { 
   FileText, CheckCircle2, Circle, 
   Download, ArrowLeft, Anchor, MapPin, Calendar, Clock, 
-  MessageSquare, FileCheck
+  MessageSquare, FileCheck, Package, User, CreditCard
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useWorkspace } from '../hooks/useWorkspace'
@@ -36,8 +36,19 @@ export function ShipmentWorkspace() {
     )
   }
 
-  // Fallback / default data to blend real API data with existing UI fields
-  const supplierName = order.supplier?.companyName || 'Supplier ' + order.supplier?.toString().substring(0,4) || 'Unknown'
+  // Safely extract references since backend might return populated objects or just ID strings
+  const supplierRef = order.supplierId || order.supplier
+  const supplierName = supplierRef?.companyName || supplierRef?.fullName || (typeof supplierRef === 'string' ? 'Supplier ' + supplierRef.substring(0,4).toUpperCase() : 'Enterprise Supplier')
+
+  const buyerRef = order.buyerId || order.buyer
+  const buyerName = buyerRef?.companyName || buyerRef?.fullName || (typeof buyerRef === 'string' ? 'Buyer ' + buyerRef.substring(0,4).toUpperCase() : 'Enterprise Buyer')
+  const buyerEmail = buyerRef?.email || 'Contact not available'
+
+  const productRef = order.productId || order.product
+  const productName = productRef?.title || productRef?.name || (typeof productRef === 'string' ? 'Product ' + productRef.substring(0,4).toUpperCase() : 'Premium Cotton Fabric')
+
+  const totalAmount = order.totalAmount || order.finalPrice || (order.quantity ? order.quantity * 12.5 : 0)
+
   const shippingDetails = order.shippingDetails || {
     carrier: 'Maersk Line',
     container: 'MRKU-129938-4',
@@ -60,6 +71,10 @@ export function ShipmentWorkspace() {
     { type: 'Packing List', name: 'Packing_List.pdf', size: '150 KB', url: '#' }
   ]
 
+  const address = order.shippingDetails?.address || '123 Textile Ave, Fashion District, NY 10001'
+  const paymentMethod = 'Bank Transfer (Net 30)'
+  const quantity = order.quantity || 5000
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans">
       
@@ -81,7 +96,7 @@ export function ShipmentWorkspace() {
               </div>
               <h1 className="text-[32px] font-display font-bold text-[#0A2540]">Order Fulfillment</h1>
               <p className="text-[14px] font-medium text-[#64748B] flex items-center gap-2 mt-1">
-                from <strong className="text-[#0A2540]">{supplierName}</strong> • ${order.totalAmount}
+                from <strong className="text-[#0A2540]">{supplierName}</strong> • ${totalAmount}
               </p>
             </div>
             <div className="flex gap-3">
@@ -99,6 +114,56 @@ export function ShipmentWorkspace() {
           {/* LEFT: Timeline & Logistics */}
           <div className="xl:col-span-8 flex flex-col gap-8">
             
+            {/* Order Summary Card */}
+            <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-8 shadow-sm">
+              <h2 className="text-[18px] font-bold text-[#0A2540] mb-6 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-[#0066FF]" /> Order Summary
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex gap-4 p-4 rounded-[16px] bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <User className="w-5 h-5 text-[#64748B]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Ordered By</p>
+                    <p className="text-[14px] font-bold text-[#0A2540]">{buyerName}</p>
+                    <p className="text-[12px] font-medium text-[#64748B]">{buyerEmail}</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 p-4 rounded-[16px] bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Package className="w-5 h-5 text-[#64748B]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Product Details</p>
+                    <p className="text-[14px] font-bold text-[#0A2540]">{productName}</p>
+                    <p className="text-[12px] font-medium text-[#64748B]">Qty: {quantity.toLocaleString()} units</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 p-4 rounded-[16px] bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <MapPin className="w-5 h-5 text-[#64748B]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Shipping Address</p>
+                    <p className="text-[14px] font-bold text-[#0A2540]">{address}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 p-4 rounded-[16px] bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <CreditCard className="w-5 h-5 text-[#64748B]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Payment Method</p>
+                    <p className="text-[14px] font-bold text-[#0A2540]">{paymentMethod}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Logistics Card */}
             <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-8 shadow-sm">
               <h2 className="text-[18px] font-bold text-[#0A2540] mb-6 flex items-center gap-2">

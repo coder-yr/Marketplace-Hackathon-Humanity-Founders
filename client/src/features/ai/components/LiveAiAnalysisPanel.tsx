@@ -1,124 +1,105 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, CheckCircle2, Loader2, BarChart2, TrendingUp, ShieldAlert, Leaf } from 'lucide-react'
-
-const AI_TASKS = [
-  "Reading material specifications...",
-  "Checking supplier certifications...",
-  "Benchmarking global prices...",
-  "Evaluating procurement risk...",
-  "Finding optimal alternatives...",
-  "Estimating total savings..."
-]
+import { useState } from 'react'
+import { Sparkles, CheckCircle2, Loader2 } from 'lucide-react'
+import { Button } from '@/shared/components/ui/button'
 
 export function LiveAiAnalysisPanel() {
-  const [currentTaskIdx, setCurrentTaskIdx] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTaskIdx((prev) => (prev + 1) % AI_TASKS.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+  const [selectedSuppliersCount] = useState(4)
+  const [draftRfqsCount] = useState(2)
 
   return (
-    <div className="flex flex-col gap-5 h-full">
+    <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-5 shadow-sm flex flex-col gap-5 text-[#0A2540]">
+      
       {/* Header */}
-      <div className="flex items-center gap-2 text-[#0A2540]">
-        <Sparkles className="w-4 h-4 text-[#0066FF]" />
-        <h3 className="text-[13px] font-bold">Live AI Analysis</h3>
-      </div>
-
-      {/* Dynamic Task Progression */}
-      <div className="bg-white rounded-[16px] border border-[#E2E8F0] p-4 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-[#0066FF]" />
-        <div className="flex items-start gap-3">
-          <Loader2 className="w-4 h-4 text-[#0066FF] animate-spin mt-0.5 flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTaskIdx}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.3 }}
-                className="text-[12px] font-bold text-[#0A2540]"
-              >
-                {AI_TASKS[currentTaskIdx]}
-              </motion.div>
-            </AnimatePresence>
-            <p className="text-[10px] text-[#64748B] mt-1">Cross-referencing 4,200+ global data points.</p>
-          </div>
+      <div className="flex items-center gap-2 pb-1 border-b border-[#F1F5F9]">
+        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2563EB]/10 text-[#2563EB]">
+          <span className="text-[12px] font-black">⁖</span>
         </div>
+        <h3 className="text-[15px] font-display font-extrabold text-[#0A2540]">Procurement Workspace</h3>
       </div>
 
-      {/* Previous Completed Tasks */}
-      <div className="flex flex-col gap-2">
-        {AI_TASKS.slice(0, 3).map((task, i) => (
-          <div key={i} className="flex items-center gap-2 text-[11px] text-[#64748B] font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A]" />
-            {task.replace('...', ' complete')}
-          </div>
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div className="h-px bg-[#E2E8F0] my-2" />
-
-      {/* Intelligence Widgets */}
+      {/* AI OPERATIONS STATUS */}
       <div>
-        <h4 className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-widest mb-4">Market Intelligence</h4>
-        
-        <div className="space-y-4">
+        <span className="block text-[10px] font-black tracking-widest text-[#94A3B8] uppercase mb-2">AI OPERATIONS STATUS</span>
+        <div className="flex flex-col gap-2">
           
-          {/* Market Demand */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[12px] font-bold text-[#0A2540] flex items-center gap-1.5"><BarChart2 className="w-3.5 h-3.5 text-[#0066FF]" /> Market Demand</span>
-              <span className="text-[11px] font-bold text-[#0066FF]">High</span>
-            </div>
-            <div className="h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} className="h-full bg-[#0066FF] rounded-full" transition={{ duration: 1, delay: 0.2 }} />
-            </div>
+          <div className="flex items-center gap-2 text-[12px] font-semibold text-[#2563EB] bg-[#EFF6FF] p-2.5 rounded-xl border border-[#DBEAFE]">
+            <Loader2 className="w-3.5 h-3.5 animate-spin flex-shrink-0" />
+            <span>Evaluating supplier reliability...</span>
           </div>
 
-          {/* Price Trend */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[12px] font-bold text-[#0A2540] flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5 text-[#16A34A]" /> Price Trend</span>
-              <span className="text-[11px] font-bold text-[#16A34A]">-2.4% MoM</span>
-            </div>
-            <div className="h-8 flex items-end gap-1">
-              {[40, 45, 42, 38, 35, 32, 28].map((h, i) => (
-                <div key={i} className="flex-1 bg-[#16A34A]/20 rounded-t-sm" style={{ height: `${h}%` }} />
-              ))}
-            </div>
-          </div>
-
-          {/* Supply Stability */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[12px] font-bold text-[#0A2540] flex items-center gap-1.5"><ShieldAlert className="w-3.5 h-3.5 text-[#F59E0B]" /> Supply Risk</span>
-              <span className="text-[11px] font-bold text-[#F59E0B]">Moderate</span>
-            </div>
-            <div className="h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: '45%' }} className="h-full bg-[#F59E0B] rounded-full" transition={{ duration: 1, delay: 0.4 }} />
-            </div>
-          </div>
-          
-          {/* Carbon Impact */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[12px] font-bold text-[#0A2540] flex items-center gap-1.5"><Leaf className="w-3.5 h-3.5 text-[#10B981]" /> Avg Carbon Impact</span>
-              <span className="text-[11px] font-bold text-[#10B981]">Class A</span>
-            </div>
-            <div className="h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: '90%' }} className="h-full bg-[#10B981] rounded-full" transition={{ duration: 1, delay: 0.6 }} />
-            </div>
+          <div className="flex items-center gap-2 text-[12px] font-semibold text-[#166534] bg-[#DCFCE7] p-2.5 rounded-xl border border-[#BBF7D0]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A] flex-shrink-0" />
+            <span>Specifications parsed successfully</span>
           </div>
 
         </div>
       </div>
+
+      {/* Key Metric Rows */}
+      <div className="flex flex-col gap-3 border-t border-[#F1F5F9] pt-4">
+        
+        <div className="flex items-center justify-between">
+          <span className="text-[13px] font-medium text-[#64748B]">Selected Suppliers</span>
+          <span className="text-[14px] font-black text-[#0A2540]">0{selectedSuppliersCount}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-[13px] font-medium text-[#64748B]">Draft RFQs</span>
+          <span className="text-[14px] font-black text-[#0A2540]">0{draftRfqsCount}</span>
+        </div>
+
+        <div className="flex items-center justify-between pt-2 border-t border-[#F1F5F9]">
+          <span className="text-[12px] font-black tracking-wider text-[#94A3B8] uppercase">EST. TOTAL SPEND</span>
+          <span className="text-[18px] font-display font-black text-[#0A2540]">$24,500</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-[12px] font-black tracking-wider text-[#16A34A] uppercase">POTENTIAL SAVINGS</span>
+          <span className="text-[15px] font-display font-black text-[#16A34A]">-$3,200</span>
+        </div>
+
+      </div>
+
+      {/* Price Trend Widget */}
+      <div className="border-t border-[#F1F5F9] pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[12px] font-bold text-[#64748B]">Price Trend</span>
+          <span className="text-[12px] font-bold text-[#16A34A]">Stable</span>
+        </div>
+        
+        {/* Mini bar graph */}
+        <div className="h-7 bg-[#F8FAFC] rounded-xl p-1.5 flex items-end gap-1.5 border border-[#F1F5F9]">
+          {[35, 45, 30, 40, 60, 90, 85].map((h, idx) => (
+            <div 
+              key={idx} 
+              className={`flex-1 rounded-sm transition-all ${idx >= 4 ? 'bg-[#2563EB]' : 'bg-[#CBD5E1]'}`}
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Supplier Risk Widget */}
+      <div className="border-t border-[#F1F5F9] pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[12px] font-bold text-[#64748B]">Supplier Risk</span>
+          <span className="text-[12px] font-bold text-[#EAB308]">Medium</span>
+        </div>
+        
+        {/* Risk meter */}
+        <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+          <div className="w-[50%] h-full bg-[#EAB308] rounded-full" />
+        </div>
+      </div>
+
+      {/* Primary Action CTA Button */}
+      <Button 
+        className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-[13px] h-12 rounded-2xl shadow-lg shadow-[#2563EB]/25 mt-2 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+      >
+        <span>Review & Execute Procurement</span>
+        <Sparkles className="w-4 h-4 fill-white" />
+      </Button>
+
     </div>
   )
 }

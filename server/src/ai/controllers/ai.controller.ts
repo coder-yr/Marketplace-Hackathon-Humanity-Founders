@@ -125,6 +125,8 @@ export const negotiation = async (req: Request, res: Response) => {
   }
 }
 
+import { productSearchService } from '../../features/products/services/product-search.service'
+
 // ── 7. Enterprise Copilot ─────────────────────────────────────────────────────
 
 export const copilot = async (req: Request, res: Response) => {
@@ -136,7 +138,33 @@ export const copilot = async (req: Request, res: Response) => {
     }
 
     const result = await enterpriseAiService.copilot(query.trim(), history || [])
-    res.json({ data: result })
+    
+    // Normalize intent to ensure it matches regardless of LLM output casing
+    const intentType = (result.intent || '').toLowerCase().replace(/ /g, '_')
+    
+    console.log('[COPILOT AI RESULT]:', JSON.stringify(result, null, 2))
+    console.log('[COPILOT NORMALIZED INTENT]:', intentType)
+
+    // Phase 11.6: Dynamic Product Search Interception
+    let products: any[] = []
+    let metadata: any = undefined
+
+    if (intentType === 'supplier_search' || intentType === 'material_search') {
+      const searchParams = {
+        searchQuery: result.params?.searchQuery || result.params?.fabricType || query.trim(),
+        fabricType: result.params?.fabricType,
+        region: result.params?.region
+      };
+      console.log('[COPILOT SEARCH PARAMS]:', searchParams);
+      
+      const searchResult = await productSearchService.search(searchParams)
+      products = searchResult.products
+      metadata = searchResult.metadata
+      console.log(`[COPILOT FOUND ${products.length} PRODUCTS]`);
+    }
+
+    // Overwrite the intent in the result to the normalized version so the frontend doesn't have to guess
+    res.json({ data: { ...result, intent: intentType, products, metadata } })
   } catch (error: any) {
     logger.error('copilot error:', error)
     res.status(500).json({ error: 'AI copilot failed', details: error.message })

@@ -15,8 +15,8 @@ export function BuyerProcurementList({ items, searchTerm }: BuyerProcurementList
   const [activeTab, setActiveTab] = useState<'all' | 'orders' | 'rfqs'>('all')
 
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (item.supplier || '').toLowerCase().includes(searchTerm.toLowerCase())
     const matchesTab = activeTab === 'all' || 
                        (activeTab === 'orders' && item.type === 'order') ||
                        (activeTab === 'rfqs' && item.type === 'rfq')
@@ -45,10 +45,11 @@ export function BuyerProcurementList({ items, searchTerm }: BuyerProcurementList
       case 'submitted': return 'Submitted'
       case 'po': return 'Pending Order'
       case 'draft': return 'Draft'
-      case 'quoting': return 'Quoting'
+      case 'quoting': return 'Quote Received'
       case 'negotiation': return 'Negotiation'
       case 'production': return 'In Production'
       case 'shipping': return 'Shipped'
+      case 'closed': return 'Closed'
       default: return column
     }
   }

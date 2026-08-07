@@ -9,7 +9,9 @@ import {
   Scale, FileText, CheckCircle2
 } from 'lucide-react'
 import { rfqsApi } from '../api/rfqs.api'
+import { ordersApi } from '../api/orders.api'
 import { useWorkspace } from '../hooks/useWorkspace'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 import { formatDistanceToNow } from 'date-fns'
 import { useAiTask } from '@/shared/hooks/useAiTask'
 import { toast } from 'sonner'
@@ -19,8 +21,12 @@ import { toast } from 'sonner'
 export function RfqWorkspace() {
   const { id } = useParams()
   const { workspace } = useWorkspace()
+  const { user } = useAuthStore()
   const [rfq, setRfq] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isAccepting, setIsAccepting] = useState(false)
+  const [isRejecting, setIsRejecting] = useState(false)
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false)
 
   const [aiData, setAiData] = useState<any>(null)
   const { runAiTask, isThinking, progress, step } = useAiTask()
@@ -35,6 +41,47 @@ export function RfqWorkspace() {
       },
       onError: (err) => toast.error(err.message)
     })
+  }
+
+  const handleAcceptQuote = async () => {
+    try {
+      setIsAccepting(true)
+      
+      // Create the order from the RFQ
+      const newOrder = await ordersApi.createOrder({
+        rfqId: rfq._id,
+        productId: rfq.productId?._id || rfq.productId,
+        supplierId: rfq.supplierId?._id || rfq.supplierId,
+        quantity: rfq.quantity,
+        finalPrice: rfq.targetPrice || 18.50,
+      })
+
+      // Update RFQ status
+      await rfqsApi.updateRfqStatus(rfq._id, 'Accepted')
+
+      toast.success('Quote Accepted! Order created successfully.')
+      // Redirect to the new order page
+      navigate(`/dashboard/orders/${newOrder._id}`)
+    } catch (error: any) {
+      toast.error('Failed to accept quote: ' + error.message)
+      setIsAccepting(false)
+    }
+  }
+
+  const handleSupplierAction = async (action: 'Quoted' | 'Rejected') => {
+    try {
+      if (action === 'Quoted') setIsSubmittingQuote(true)
+      if (action === 'Rejected') setIsRejecting(true)
+
+      await rfqsApi.updateRfqStatus(rfq._id, action)
+      setRfq((prev: any) => ({ ...prev, status: action }))
+      toast.success(`RFQ successfully ${action.toLowerCase()}.`)
+    } catch (error: any) {
+      toast.error(`Failed to update RFQ: ${error.message}`)
+    } finally {
+      setIsSubmittingQuote(false)
+      setIsRejecting(false)
+    }
   }
 
   useEffect(() => {
@@ -123,9 +170,34 @@ export function RfqWorkspace() {
               <Button variant="outline" className="border-[#E2E8F0] text-[#0A2540] font-bold rounded-[8px] h-10">
                 <MessageSquare className="w-4 h-4 mr-2" /> Message
               </Button>
-              <Button className="bg-[#0A2540] hover:bg-[#1E293B] text-white font-bold rounded-[8px] h-10 px-6">
-                Accept Quote
-              </Button>
+              {user?.role === 'buyer' && (
+                <Button 
+                  onClick={handleAcceptQuote} 
+                  disabled={isAccepting || status === 'Accepted'}
+                  className="bg-[#0A2540] hover:bg-[#1E293B] text-white font-bold rounded-[8px] h-10 px-6"
+                >
+                  {isAccepting ? 'Accepting...' : status === 'Accepted' ? 'Accepted' : 'Accept Quote'}
+                </Button>
+              )}
+              {user?.role === 'supplier' && (
+                <>
+                  <Button 
+                    onClick={() => handleSupplierAction('Rejected')}
+                    disabled={isRejecting || isSubmittingQuote || status === 'Rejected' || status === 'Accepted'}
+                    variant="outline"
+                    className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold rounded-[8px] h-10 px-6"
+                  >
+                    {isRejecting ? 'Rejecting...' : status === 'Rejected' ? 'Rejected' : 'Reject Request'}
+                  </Button>
+                  <Button 
+                    onClick={() => handleSupplierAction('Quoted')}
+                    disabled={isRejecting || isSubmittingQuote || status === 'Quoted' || status === 'Accepted'}
+                    className="bg-[#0A2540] hover:bg-[#1E293B] text-white font-bold rounded-[8px] h-10 px-6"
+                  >
+                    {isSubmittingQuote ? 'Submitting...' : status === 'Quoted' ? 'Quote Submitted' : 'Submit Quote'}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </Container>
@@ -139,7 +211,7 @@ export function RfqWorkspace() {
             
             <Card className="rounded-[24px] border border-[#E2E8F0] p-8 shadow-sm">
               <h2 className="text-[18px] font-bold text-[#0A2540] mb-6 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#0066FF]" /> Official Quote
+                <FileText className="w-5 h-5 text-[#0066FF]" /> Quote Details
               </h2>
               
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-[16px] p-6 mb-6">
@@ -161,17 +233,28 @@ export function RfqWorkspace() {
                   </div>
                   <div>
                     <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider mb-1">Valid Until</p>
-                    <p className="text-[15px] font-bold text-[#0A2540]">Oct 15, 2026</p>
+                    <p className="text-[15px] font-bold text-[#0A2540]">
+                      {new Date(new Date(rfq.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider mb-2">Supplier Notes</p>
+                <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider mb-2">Custom Requirements</p>
                 <p className="text-[14px] text-[#0A2540] leading-relaxed bg-[#F1F5F9] p-4 rounded-[12px]">
-                  "{rfq.notes || 'Premium combed cotton. Price includes export packaging.'}"
+                  {rfq.notes ? `"${rfq.notes}"` : '"Premium combed cotton. Price includes export packaging."'}
                 </p>
               </div>
+              
+              {rfq.deliveryAddress && (
+                <div className="mt-4">
+                  <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider mb-2">Delivery Address</p>
+                  <p className="text-[14px] text-[#0A2540] leading-relaxed bg-[#F1F5F9] p-4 rounded-[12px]">
+                    {rfq.deliveryAddress}
+                  </p>
+                </div>
+              )}
             </Card>
 
           </div>

@@ -33,7 +33,7 @@ export function ProductDetailPage() {
   
   // RFQ State
   const [isRfqModalOpen, setIsRfqModalOpen] = useState(false)
-  const [rfqForm, setRfqForm] = useState({ quantity: '', targetPrice: '', notes: '' })
+  const [rfqForm, setRfqForm] = useState({ quantity: '', targetPrice: '', notes: '', deliveryAddress: '' })
   const [isSubmittingRfq, setIsSubmittingRfq] = useState(false)
   
   // AI Task State
@@ -132,7 +132,8 @@ export function ProductDetailPage() {
         productId: product._id,
         quantity: parseInt(rfqForm.quantity) || product.moq?.value || 100,
         targetPrice: parseFloat(rfqForm.targetPrice) || undefined,
-        notes: rfqForm.notes
+        notes: rfqForm.notes,
+        deliveryAddress: rfqForm.deliveryAddress
       })
       toast.success('RFQ Submitted successfully!')
       setIsRfqModalOpen(false)
@@ -938,11 +939,21 @@ export function ProductDetailPage() {
                 <div>
                   <label className="block text-[13px] font-bold text-[#0A2540] mb-1.5">Additional Requirements</label>
                   <textarea 
-                    rows={3}
+                    rows={2}
                     value={rfqForm.notes}
                     onChange={(e) => setRfqForm({...rfqForm, notes: e.target.value})}
                     placeholder="E.g., custom colors, faster shipping, testing certificates needed..."
                     className="w-full p-4 rounded-[10px] border border-[#E2E8F0] focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] outline-none text-[14px] resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[13px] font-bold text-[#0A2540] mb-1.5">Delivery Address</label>
+                  <input 
+                    type="text"
+                    value={rfqForm.deliveryAddress}
+                    onChange={(e) => setRfqForm({...rfqForm, deliveryAddress: e.target.value})}
+                    placeholder="Shipping address"
+                    className="w-full h-11 px-4 rounded-[10px] border border-[#E2E8F0] focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] outline-none text-[14px]"
                   />
                 </div>
                 <div className="pt-4 flex gap-3">

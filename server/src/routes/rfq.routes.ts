@@ -10,5 +10,6 @@ router.post('/', rfqController.createRfq)
 router.get('/buyer', rfqController.getBuyerRfqs)
 router.get('/supplier', rfqController.getSupplierRfqs)
 router.get('/:id', rfqController.getRfqById)
+router.patch('/:id/status', rfqController.updateRfqStatus)
 
 export const rfqRouter = router

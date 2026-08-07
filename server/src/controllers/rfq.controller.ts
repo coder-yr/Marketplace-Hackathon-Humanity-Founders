@@ -56,6 +56,21 @@ export class RfqController {
       res.status(500).json({ success: false, message: error.message })
     }
   }
+
+  async updateRfqStatus(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, message: 'Unauthorized' })
+        return
+      }
+
+      const { status } = req.body
+      const rfq = await rfqService.updateRfqStatus((req.params.id as string), status)
+      res.status(200).json({ success: true, rfq })
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message })
+    }
+  }
 }
 
 export const rfqController = new RfqController()

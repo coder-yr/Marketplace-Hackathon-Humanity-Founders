@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { useCartStore } from '@/features/cart/store/cart.store'
-import { Search, Menu, Zap, Hexagon, User, Command, Bell, ShoppingCart } from 'lucide-react'
+import { Hexagon, User, Bell, ShoppingCart, Menu, Search, Command, Zap } from 'lucide-react'
 import { EnterpriseCopilot } from '@/features/ai/components/EnterpriseCopilot'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/shared/components/ui/button'
@@ -26,112 +26,96 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
   }, [isAuthenticated, user, fetchCart])
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7F8FA] font-sans text-[var(--body)]">
+    <div className="min-h-screen flex flex-col bg-[#F4F6F8] font-sans text-[#0A2540]">
       
-      {/* Floating Navigation */}
-      <div className="w-full pt-4 px-4 lg:px-8 max-w-[1400px] mx-auto z-50 sticky top-0">
-        <div className="bg-[#0A2540] h-[72px] rounded-[20px] flex items-center px-4 lg:px-6 gap-6 shadow-md backdrop-blur-md bg-opacity-95">
+      {/* Top Navbar Header */}
+      <div className="w-full px-4 lg:px-8 pt-4 sticky top-0 z-50">
+        <header className="max-w-[1400px] mx-auto h-[60px] bg-[#0A2540] rounded-full px-4 lg:px-6 flex items-center justify-between gap-4 lg:gap-6 shadow-lg">
           
-          {/* Menu & Logo */}
-          <div className="flex items-center gap-4 shrink-0">
-            <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors">
-              <Menu className="w-6 h-6" />
+          {/* Left section */}
+          <div className="flex items-center gap-4 lg:gap-6 flex-shrink-0">
+            <button className="text-white/80 hover:text-white transition-colors">
+              <Menu className="w-5 h-5" />
             </button>
             <Link to="/" className="flex items-center gap-2 group">
-              <Hexagon className="w-7 h-7 text-[#0066FF] fill-[#0066FF]" />
-              <span className="font-bold text-[22px] text-white tracking-tight font-display">
+              <Hexagon className="w-6 h-6 text-[#2563EB] fill-[#2563EB]" />
+              <span className="font-display font-extrabold text-[18px] text-white tracking-tight">
                 TextileHub
               </span>
             </Link>
+            
+            {/* Search Bar */}
+            <div className="hidden lg:flex items-center bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-4 py-1.5 w-[240px] xl:w-[320px] transition-colors cursor-pointer ml-2">
+              <Search className="w-4 h-4 text-white/40 mr-2" />
+              <span className="text-[13px] text-white/50 flex-1 truncate">Search for Fabrics, Mills...</span>
+              <div className="flex items-center gap-1 bg-white/10 rounded px-1.5 py-0.5 text-[10px] text-white/60 font-medium">
+                <Command className="w-3 h-3" /> K
+              </div>
+            </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-[600px] hidden md:block">
-            <button 
-              onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-              className="w-full h-11 px-5 rounded-full bg-[#1E293B] hover:bg-[#334155] border border-[#334155] text-[#94A3B8] flex items-center justify-between transition-colors text-[14px] min-w-0"
-            >
-              <div className="flex items-center gap-3 overflow-hidden min-w-0 mr-2">
-                <Search className="w-4 h-4 shrink-0" />
-                <span className="font-medium whitespace-nowrap truncate">Search for Fabrics, Mills...</span>
-              </div>
-              <div className="flex items-center gap-1 bg-[#0A2540] px-2 py-1 rounded-[6px] border border-[#334155] shrink-0">
-                <Command className="w-3 h-3" />
-                <span className="text-[10px] font-bold">K</span>
-              </div>
-            </button>
-          </div>
-
-          <div className="flex-1" />
-
-          {/* Right Actions */}
-          <div className="flex items-center gap-5 shrink-0">
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-[14px] font-bold text-white/80">
-            <Link to="/" className="hover:text-white transition-colors">Discover</Link>
-            <Link to="/marketplace" className="hover:text-white transition-colors">Materials</Link>
+          {/* Center Links */}
+          <nav className="hidden xl:flex items-center gap-6 text-[13px] font-bold text-[#38BDF8]">
+            <Link to="/marketplace" className="hover:text-white transition-colors">Discover</Link>
+            <Link to="/categories" className="hover:text-white transition-colors">Materials</Link>
             <Link to="/marketplace?filter=verified" className="hover:text-white transition-colors">Suppliers</Link>
             <Link to="/dashboard/procurement" className="hover:text-white transition-colors">RFQs</Link>
-            <Link to="/dashboard/procurement" className="hover:text-white transition-colors">Orders</Link>
+            <Link to="/dashboard/orders" className="hover:text-white transition-colors">Orders</Link>
             <Link to="/dashboard/analytics" className="hover:text-white transition-colors">Analytics</Link>
-            <Link to="/ai" className="text-[#38BDF8] flex items-center gap-1 hover:text-white transition-colors">
-              <Zap className="w-3.5 h-3.5 fill-current" /> AI Copilot
+            <Link to="/ai" className="hover:text-white transition-colors flex items-center gap-1.5">
+              <Zap className="w-4 h-4" /> AI Copilot
             </Link>
           </nav>
 
-            {isAuthenticated && (
-              <>
-                <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors relative">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-[#DC2626] rounded-full border border-[#0A2540]" />
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 lg:gap-4 flex-shrink-0">
+            {isAuthenticated && user?.role === 'buyer' && (
+              <Link to="/cart">
+                <button className="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors relative">
+                  <ShoppingCart className="w-4 h-4" />
+                  {totalItemsCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-[#2563EB] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {totalItemsCount}
+                    </span>
+                  )}
                 </button>
-                {user?.role === 'buyer' && (
-                  <Link to="/cart">
-                    <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors relative">
-                      <ShoppingCart className="w-5 h-5" />
-                      {totalItemsCount > 0 && (
-                        <span className="absolute top-1 right-1 w-4 h-4 bg-[var(--primary)] text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-[#0A2540]">
-                          {totalItemsCount}
-                        </span>
-                      )}
-                    </button>
-                  </Link>
-                )}
-              </>
+              </Link>
             )}
 
-            <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <div className="relative group">
-                  <Link to="/dashboard">
-                    <div className="w-10 h-10 rounded-full bg-white overflow-hidden border-2 border-white/20 cursor-pointer hover:border-white/40 transition-colors">
-                      <img src={`https://ui-avatars.com/api/?name=${user?.fullName || 'User'}&background=0066FF&color=fff&bold=true`} alt="User" className="w-full h-full object-cover" />
-                    </div>
-                  </Link>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[12px] shadow-lg border border-[var(--border)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <div className="px-4 py-2 border-b border-[#E2E8F0] mb-1">
-                      <p className="text-[13px] font-bold text-[var(--heading)] truncate">{user?.fullName}</p>
-                      <p className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{user?.role}</p>
-                    </div>
-                    <Link to="/dashboard" className="block px-4 py-2 text-[14px] text-[var(--heading)] hover:bg-[#F8FAFC] font-bold transition-colors">Go to Dashboard</Link>
-                    <button 
-                      onClick={handleLogout} 
-                      className="w-full text-left px-4 py-2 text-[14px] text-[#DC2626] hover:bg-[#FEF2F2] font-bold transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </div>
+            <button className="relative w-9 h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#EF4444] rounded-full" />
+            </button>
+
+            {/* Profile Pill */}
+            {isAuthenticated ? (
+              <div className="relative group ml-1">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2563EB] text-white border border-white/20 cursor-pointer overflow-hidden shadow-sm hover:ring-2 hover:ring-white/20 transition-all">
+                  <span className="text-[12px] font-extrabold">{user?.fullName?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'BA'}</span>
                 </div>
-              ) : (
-                <Link to="/login">
-                  <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20 cursor-pointer flex items-center justify-center text-white">
-                    <User className="w-5 h-5" />
+
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#E2E8F0] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <div className="px-4 py-2 border-b border-[#F1F5F9] mb-1">
+                    <p className="text-[13px] font-extrabold text-[#0A2540] truncate">{user?.fullName || 'Enterprise Admin'}</p>
+                    <p className="text-[11px] font-medium text-[#64748B] truncate">{user?.email}</p>
                   </div>
-                </Link>
-              )}
-            </div>
+                  <Link to="/dashboard" className="block px-4 py-2 text-[13px] font-bold text-[#0A2540] hover:bg-[#F8FAFC]">Dashboard</Link>
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#DC2626] hover:bg-[#FEF2F2]">
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link to="/login" className="ml-1">
+                <div className="flex items-center gap-2 bg-[#2563EB] text-white px-4 py-1.5 rounded-full text-[13px] font-bold hover:bg-[#1D4ED8] transition-colors">
+                  <User className="w-3.5 h-3.5" />
+                  <span>Login</span>
+                </div>
+              </Link>
+            )}
           </div>
-        </div>
+
+        </header>
       </div>
 
       {/* Main Outlet */}

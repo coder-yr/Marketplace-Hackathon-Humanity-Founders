@@ -48,18 +48,24 @@ export function ProcurementWorkspace() {
 
     rfqs.forEach(rfq => {
       let column = 'submitted'
-      if (rfq.status === 'draft') column = 'draft'
-      if (rfq.status === 'quoting') column = 'quoting'
-      if (rfq.status === 'negotiating') column = 'negotiation'
-      if (rfq.status === 'accepted') column = 'po' // Temporary until PO created
-      if (rfq.status === 'closed') return
+      const status = (rfq.status || '').toLowerCase()
+      if (status === 'draft') column = 'draft'
+      if (status === 'quoting' || status === 'quoted' || status === 'responded') column = 'quoting'
+      if (status === 'negotiating' || status === 'negotiation') column = 'negotiation'
+      if (status === 'accepted') column = 'po' 
+      if (status === 'rejected') column = 'closed'
+      if (status === 'closed' || status === 'expired') return
+
+      const supplierRef = rfq.supplierId || rfq.supplier
+      const supplierName = supplierRef?.companyName || supplierRef?.fullName || (typeof supplierRef === 'string' ? 'Supplier ' + supplierRef.substring(0,4).toUpperCase() : 'Enterprise Supplier')
+      const productName = rfq.productId?.title || rfq.productId?.name || 'Custom Order'
 
       newItems.push({
         id: rfq._id,
         type: 'rfq',
         column,
-        title: rfq.title,
-        supplier: 'Multiple Suppliers',
+        title: productName,
+        supplier: supplierName,
         date: formatDistanceToNow(new Date(rfq.createdAt), { addSuffix: true }),
         priority: 'Medium',
         alert: rfq.status === 'quoting' ? 'Needs Review' : null
@@ -73,16 +79,16 @@ export function ProcurementWorkspace() {
       if (status === 'shipped') column = 'shipping'
       if (status === 'delivered') return
 
-      // Safely extract a string representation of the supplier ID
+      // Safely extract the supplier name
       const supplierRef = order.supplierId || order.supplier
-      const supplierStr = supplierRef ? (typeof supplierRef === 'object' ? (supplierRef._id || supplierRef.fullName || 'Unknown') : supplierRef.toString()) : 'Unknown'
+      const supplierName = supplierRef?.companyName || supplierRef?.fullName || (typeof supplierRef === 'string' ? 'Supplier ' + supplierRef.substring(0,4).toUpperCase() : 'Enterprise Supplier')
 
       newItems.push({
         id: order._id,
         type: 'order',
         column,
         title: `Order ${order._id.substring(order._id.length - 4)}`,
-        supplier: 'Supplier ID ' + supplierStr.substring(0,4),
+        supplier: supplierName,
         date: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }),
         priority: 'High',
         progress: order.status === 'Processing' ? 65 : undefined,
@@ -140,8 +146,8 @@ export function ProcurementWorkspace() {
 
   // Filter items by search
   const filteredItems = localItems.filter(item => 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
+    (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (item.supplier || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (isLoading && !workspace) {

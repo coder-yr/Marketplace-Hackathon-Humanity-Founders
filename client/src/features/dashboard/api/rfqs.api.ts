@@ -8,5 +8,9 @@ export const rfqsApi = {
   createRfq: async (data: { supplierId: string, productId: string, quantity: number, targetPrice?: number, notes?: string }) => {
     const res = await api.post('/rfqs', data)
     return res.data.rfq
+  },
+  updateRfqStatus: async (id: string, status: string) => {
+    const res = await api.patch(`/rfqs/${id}/status`, { status })
+    return res.data.rfq
   }
 }
