@@ -135,7 +135,7 @@ export function ProductDetailPage() {
         targetPrice: parseFloat(rfqForm.targetPrice) || undefined,
         notes: rfqForm.notes,
         deliveryAddress: rfqForm.deliveryAddress
-      })
+      } as any)
       toast.success('RFQ Submitted successfully!')
       setIsRfqModalOpen(false)
       navigate('/dashboard/procurement')

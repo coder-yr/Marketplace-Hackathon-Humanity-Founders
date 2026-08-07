@@ -17,7 +17,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onSelectForCompare, isSelectedForCompare = false }: ProductCardProps) {
   const navigate = useNavigate()
-  const [isHovered, setIsHovered] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   
   const mainImage = product.images?.[0] || 'https://images.unsplash.com/photo-1596484552834-6a58f850d0d7?auto=format&fit=crop&w=800&q=80'
@@ -36,8 +35,6 @@ export function ProductCard({ product, onSelectForCompare, isSelectedForCompare 
     <motion.div
       {...presets.staggeredItem}
       {...presets.cardHover}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={`bg-white rounded-[24px] border ${isSelectedForCompare ? 'border-[#2563EB] ring-2 ring-[#2563EB]/20 shadow-md' : 'border-[#E2E8F0] shadow-sm hover:shadow-xl'} transition-all duration-300 p-5 flex flex-col gap-4 relative overflow-hidden group/card`}
     >
       {/* Top Row: Thumbnail + Specs + AI Match Score */}

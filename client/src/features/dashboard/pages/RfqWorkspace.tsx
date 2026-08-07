@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Container } from '@/shared/components/layout/container'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
@@ -20,6 +20,7 @@ import { toast } from 'sonner'
 
 export function RfqWorkspace() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { workspace } = useWorkspace()
   const { user } = useAuthStore()
   const [rfq, setRfq] = useState<any>(null)

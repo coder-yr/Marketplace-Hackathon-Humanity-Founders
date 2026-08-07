@@ -1,6 +1,5 @@
 import { Product } from '../../../models/product.model'
 import { SupplierProfile } from '../../../models/supplier-profile.model'
-import { FilterQuery } from 'mongoose'
 import { logger } from '../../../config/logger'
 
 export interface ProductSearchParams {
@@ -18,7 +17,7 @@ export class ProductSearchService {
     const startTime = Date.now()
     
     // Default filters
-    const query: FilterQuery<any> = { 
+    const query: Record<string, any> = { 
       status: 'active', 
       isDeleted: false, 
       published: true 
@@ -83,8 +82,8 @@ export class ProductSearchService {
           cached: false
         }
       }
-    } catch (error) {
-      logger.error('ProductSearchService search error:', error)
+    } catch (error: any) {
+      logger.error({ err: error }, 'ProductSearchService search error')
       return {
         products: [],
         metadata: { totalResults: 0, searchTime: Date.now() - startTime, cached: false }

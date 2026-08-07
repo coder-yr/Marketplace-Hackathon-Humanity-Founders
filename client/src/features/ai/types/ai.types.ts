@@ -103,4 +103,6 @@ export interface CopilotIntent {
   params: Record<string, string>
   response: string
   confidence: number
+  products?: any[]
+  metadata?: any
 }

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  FileText, Truck, ArrowRight, Sparkles, 
+  FileText, Sparkles,
   Calculator, Layers, ShieldCheck, Loader2,
-  Zap, MessageSquare, Search, Factory, 
+  Zap, Search, Factory, 
   TrendingUp, DollarSign, Clock
 } from 'lucide-react'
 import { copilotQuery } from '../api/ai.api'
