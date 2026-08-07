@@ -7,6 +7,7 @@ import {
   Search, Layers, Sparkles, CheckCircle2, Factory, ChevronRight, Truck, FileText, CheckCircle, RefreshCw, Cpu
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -59,8 +60,13 @@ export function HomePage() {
     <div className="bg-[#F7F8FA] min-h-screen pb-24 font-sans text-[var(--body)]">
       
       {/* 1. HERO SECTION — Living Operating System Simulation */}
-      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-4 relative z-10">
+      <motion.section 
+        {...presets.scrollReveal}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-4 relative z-10"
+      >
         <div className="bg-[#0A2540] rounded-[32px] p-8 lg:p-14 text-white shadow-2xl flex flex-col lg:flex-row gap-12 items-center relative overflow-hidden border border-[#1E293B]">
+          
+
           
           {/* Subtle Background Blueprint Mesh Grid & Glows */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
@@ -177,7 +183,7 @@ export function HomePage() {
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
       {/* 2. TRUSTED BY BRAND LOGOS BAR */}
       <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-12 text-center">
@@ -193,26 +199,50 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Cinematic Live Video Section */}
+      <motion.section 
+        {...presets.scrollReveal}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-16 flex justify-center"
+      >
+        <div className="rounded-[32px] overflow-hidden relative shadow-xl border border-[#E2E8F0] w-full max-w-[1200px] aspect-video max-h-[600px]">
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="w-full h-full object-cover"
+          >
+            <source src="/media/hero-bg.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </motion.section>
+
       {/* 3. ENTERPRISE METRICS ROW */}
-      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-16">
+      <motion.section 
+        {...presets.staggeredList}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-16"
+      >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: 'Verified Mills', val: '2,500+', note: 'ISO & GOTS Certified' },
-            { label: 'Avg Mill Response', val: '6 hrs', note: 'Strict SLA enforcement' },
-            { label: 'Global Coverage', val: '42 Countries', note: 'Asia, EU, & Americas' },
-            { label: 'Avg Lead Time', val: '14 Days', note: 'Fast-track customs' },
-          ].map((m, i) => (
-            <div key={i} className="bg-white rounded-[20px] p-6 border border-[#E2E8F0] shadow-sm">
-              <span className="text-[40px] font-display font-extrabold text-[#0066FF] leading-none block mb-1">{m.val}</span>
-              <h4 className="font-bold text-[15px] text-[#0A2540] mb-0.5">{m.label}</h4>
-              <p className="text-[12px] text-[#94A3B8] font-medium">{m.note}</p>
-            </div>
+            { label: 'Active Suppliers', val: '4,000+', desc: 'Verified facilities' },
+            { label: 'Material Matches', val: '1M+', desc: 'In our AI index' },
+            { label: 'Time to Quote', val: '< 2hrs', desc: 'Average response' },
+            { label: 'GMV Managed', val: '$500M+', desc: 'Annual volume' }
+          ].map((stat, i) => (
+            <motion.div key={i} {...presets.staggeredItem} className="bg-white rounded-[24px] p-6 text-center border border-[#E2E8F0] shadow-sm">
+              <div className="text-[32px] font-display font-extrabold text-[#0066FF] mb-1">{stat.val}</div>
+              <div className="font-bold text-[#0A2540] text-[14px]">{stat.label}</div>
+              <div className="text-[#64748B] text-[13px] font-medium mt-1">{stat.desc}</div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* 4. FEATURED MATERIALS (Direct Catalog Discovery) */}
-      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-20">
+      <motion.section 
+        {...presets.staggeredList}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-20"
+      >
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-[28px] font-display font-bold text-[#0A2540]">Featured Verified Materials</h2>
@@ -230,10 +260,12 @@ export function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredProducts.slice(0, 6).map((product) => (
-              <div 
+              <motion.div 
+                {...presets.staggeredItem}
                 key={product._id} 
                 onClick={() => navigate(`/products/${product._id}`)}
                 className="bg-white rounded-[24px] border border-[#E2E8F0] p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                whileHover={{ y: -4 }}
               >
                 <div>
                   <div className="h-40 rounded-[16px] bg-[#F7F8FA] overflow-hidden mb-4 relative">
@@ -249,14 +281,17 @@ export function HomePage() {
                   <span className="text-[16px] font-display font-bold text-[#0066FF]">${product.priceRange?.min} - ${product.priceRange?.max}/m</span>
                   <Button size="sm" className="bg-[#0A2540] hover:bg-[#0066FF] text-white text-[12px] font-bold rounded-[8px]">Request RFQ</Button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
-      </section>
+      </motion.section>
 
       {/* 5. FULL SOURCING LIFECYCLE ROADMAP */}
-      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-24">
+      <motion.section 
+        {...presets.scrollReveal}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-24"
+      >
         <div className="bg-white rounded-[32px] p-8 lg:p-12 border border-[#E2E8F0] shadow-sm">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-[11px] font-bold uppercase tracking-widest text-[#0066FF] bg-[#0066FF]/10 px-3 py-1 rounded-full">End-to-End Control</span>
@@ -264,42 +299,50 @@ export function HomePage() {
             <p className="text-[14px] text-[#64748B] font-medium">TextileHub powers your entire sourcing workflow within a single enterprise dashboard.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 relative">
+          <motion.div 
+            {...presets.staggeredList}
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 relative"
+          >
             {lifecycleStages.map((stage, idx) => (
-              <div key={idx} className="bg-[#F7F8FA] p-4 rounded-[16px] border border-[#E2E8F0] text-center flex flex-col items-center justify-center relative group hover:border-[#0066FF] transition-colors">
+              <motion.div key={idx} {...presets.staggeredItem} className="bg-[#F7F8FA] p-4 rounded-[16px] border border-[#E2E8F0] text-center flex flex-col items-center justify-center relative group hover:border-[#0066FF] transition-colors">
                 <div className="w-10 h-10 rounded-[12px] bg-white text-[#0066FF] border border-[#E2E8F0] flex items-center justify-center mb-3 shadow-sm group-hover:bg-[#0066FF] group-hover:text-white transition-colors">
                   <stage.icon className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-0.5">Stage 0{idx + 1}</span>
-                <h4 className="font-bold text-[13px] text-[#0A2540] leading-snug mb-1">{stage.label}</h4>
-                <p className="text-[10px] text-[#64748B] font-medium">{stage.desc}</p>
-              </div>
+                <span className="text-[12px] font-bold text-[#0A2540]">{stage.label}</span>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 6. AI WORKFLOW WITH ANIMATED CONNECTED STEPS */}
-      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-20">
+      <motion.section 
+        {...presets.scrollReveal}
+        className="max-w-[1400px] mx-auto px-4 lg:px-8 mt-20"
+      >
         <div className="bg-[#0A2540] rounded-[32px] p-8 lg:p-12 text-white border border-[#1E293B] shadow-xl">
           <div className="mb-8">
             <span className="bg-[#38BDF8]/20 text-[#38BDF8] text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-[#38BDF8]/30">Intelligent Pipeline</span>
             <h2 className="text-[32px] font-display font-extrabold mt-3">AI Sourcing Pipeline</h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+          <motion.div 
+            {...presets.staggeredList}
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"
+          >
             {[
               'Need', 'Intent Parsing', 'Semantic Search', 'Supplier Ranking',
               'Cost Benchmark', 'Draft RFQ', 'Review', 'Send'
             ].map((stepName, index) => (
-              <div key={index} className="bg-[#1E293B] p-4 rounded-[16px] border border-[#334155] relative text-center">
+              <motion.div key={index} {...presets.staggeredItem} className="bg-[#1E293B] p-4 rounded-[16px] border border-[#334155] relative text-center">
                 <span className="text-[10px] font-bold text-[#38BDF8] block mb-1">Step 0{index + 1}</span>
                 <h4 className="font-bold text-[13px] leading-tight text-white">{stepName}</h4>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
     </div>
   )

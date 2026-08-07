@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { MainLayout } from '@/shared/layouts/MainLayout'
 import { GuestRoute } from '@/shared/components/routing/GuestRoute'
 import { ProtectedRoute } from '@/shared/components/routing/ProtectedRoute'
@@ -29,46 +30,57 @@ const OnboardingPage = lazy(() => import('@/features/onboarding/pages/Onboarding
 const WorkspaceSetupPage = lazy(() => import('@/features/onboarding/pages/WorkspaceSetupPage').then(module => ({ default: module.WorkspaceSetupPage })))
 
 export function AppRouter() {
+  const location = useLocation()
+
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center p-4">Loading...</div>}>
-      <Routes>
-        {/* Public Marketplace Pages with MainLayout */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/marketplace" element={<MarketplacePage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
-          <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
-          <Route path="/ai" element={<AiWorkspacePage />} />
-          <Route element={<ProtectedRoute requireOnboarded={true} />}>
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/checkout/confirmation" element={<CheckoutConfirmationPage />} />
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-[#0066FF] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[#64748B] font-medium animate-pulse">Loading Workspace...</p>
+        </div>
+      </div>
+    }>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public Marketplace Pages with MainLayout */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
+            <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
+            <Route path="/ai" element={<AiWorkspacePage />} />
+            <Route element={<ProtectedRoute requireOnboarded={true} />}>
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/checkout/confirmation" element={<CheckoutConfirmationPage />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Guest Only Routes (Login, Register) */}
-        <Route element={<GuestRoute />}>
-          <Route path="/choose-role" element={<ChooseRolePage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-        </Route>
+          {/* Guest Only Routes (Login, Register) */}
+          <Route element={<GuestRoute />}>
+            <Route path="/choose-role" element={<ChooseRolePage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Route>
 
-        {/* Protected Dashboard Routes (Authenticated & Onboarded Users Only) */}
-        <Route element={<ProtectedRoute requireOnboarded={true} />}>
-          <Route path="/dashboard/*" element={<DashboardRouter />} />
-        </Route>
+          {/* Protected Dashboard Routes (Authenticated & Onboarded Users Only) */}
+          <Route element={<ProtectedRoute requireOnboarded={true} />}>
+            <Route path="/dashboard/*" element={<DashboardRouter />} />
+          </Route>
 
-        {/* Protected Routes for Un-onboarded Users */}
-        <Route element={<ProtectedRoute requireOnboarded={false} requireNotOnboarded={true} />}>
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/workspace-setup" element={<WorkspaceSetupPage />} />
-        </Route>
+          {/* Protected Routes for Un-onboarded Users */}
+          <Route element={<ProtectedRoute requireOnboarded={false} requireNotOnboarded={true} />}>
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/workspace-setup" element={<WorkspaceSetupPage />} />
+          </Route>
 
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        <Route path="/dev/components" element={<DevPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/dev/components" element={<DevPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AnimatePresence>
     </Suspense>
   )
 }

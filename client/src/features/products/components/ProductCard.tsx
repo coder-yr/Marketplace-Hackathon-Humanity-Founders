@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { motion } from 'framer-motion'
-import { transitionCard } from '@/shared/animations'
+import { presets } from '@/shared/animations/presets'
 
 interface ProductCardProps {
   product: Product
@@ -34,11 +34,11 @@ export function ProductCard({ product, onSelectForCompare, isSelectedForCompare 
 
   return (
     <motion.div
+      {...presets.staggeredItem}
+      {...presets.cardHover}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      animate={{ y: isHovered ? -2 : 0 }}
-      transition={transitionCard}
-      className={`bg-white rounded-[24px] border ${isSelectedForCompare ? 'border-[#2563EB] ring-2 ring-[#2563EB]/20 shadow-md' : 'border-[#E2E8F0] shadow-sm hover:shadow-md'} transition-all p-5 flex flex-col gap-4 relative overflow-hidden`}
+      className={`bg-white rounded-[24px] border ${isSelectedForCompare ? 'border-[#2563EB] ring-2 ring-[#2563EB]/20 shadow-md' : 'border-[#E2E8F0] shadow-sm hover:shadow-xl'} transition-all duration-300 p-5 flex flex-col gap-4 relative overflow-hidden group/card`}
     >
       {/* Top Row: Thumbnail + Specs + AI Match Score */}
       <div 
@@ -51,7 +51,7 @@ export function ProductCard({ product, onSelectForCompare, isSelectedForCompare 
           <img 
             src={mainImage} 
             alt={product.title} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" 
           />
           {isTopTier && (
             <div className="absolute top-2 left-2 bg-[#FEF08A] text-[#854D0E] font-black text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm border border-[#FDE047]">
@@ -120,7 +120,7 @@ export function ProductCard({ product, onSelectForCompare, isSelectedForCompare 
 
         {/* Circular Match Badge on top right */}
         <div className="flex flex-col items-center flex-shrink-0">
-          <div className="w-12 h-12 rounded-full border-2 border-[#2563EB] bg-[#EFF6FF] flex flex-col items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-full border-2 border-[#2563EB] bg-[#EFF6FF] flex flex-col items-center justify-center shadow-sm group-hover/card:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-shadow duration-300">
             <span className="text-[14px] font-black text-[#2563EB] leading-none">{aiMatchScore}</span>
             <span className="text-[7px] font-black text-[#2563EB] tracking-wider uppercase">MATCH</span>
           </div>

@@ -4,6 +4,7 @@ import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Search, Filter, Plus, Truck, Clock, AlertCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 import { useNavigate } from 'react-router-dom'
 import { useWorkspace } from '../hooks/useWorkspace'
 import { formatDistanceToNow } from 'date-fns'
@@ -159,7 +160,7 @@ export function ProcurementWorkspace() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24">
+    <motion.div {...presets.page} className="min-h-screen bg-[#F8FAFC] pb-24">
       {/* Workspace Header */}
       <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-20">
         <Container className="py-6">
@@ -287,6 +288,6 @@ export function ProcurementWorkspace() {
           <BuyerProcurementList items={filteredItems} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </Container>
       )}
-    </div>
+    </motion.div>
   )
 }

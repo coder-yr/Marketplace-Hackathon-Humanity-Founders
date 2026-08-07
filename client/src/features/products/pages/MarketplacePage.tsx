@@ -14,8 +14,8 @@ import {
   ListFilter
 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
-import { motion } from 'framer-motion'
-import { staggerContainerVariants as staggerContainer, fadeVariants as fadeIn } from '@/shared/animations'
+import { motion, AnimatePresence } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 
 export function MarketplacePage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -214,20 +214,28 @@ export function MarketplacePage() {
             </div>
           ) : (
             <motion.div 
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
+              {...presets.staggeredList}
+              layout
               className="flex flex-col gap-4"
             >
-              {products.map((product) => (
-                <motion.div key={product._id} variants={fadeIn}>
-                  <ProductCard 
-                    product={product} 
-                    onSelectForCompare={handleSelectForCompare} 
-                    isSelectedForCompare={selectedForCompare.some(p => p._id === product._id)} 
-                  />
-                </motion.div>
-              ))}
+              <AnimatePresence mode="popLayout">
+                {products.map((product) => (
+                  <motion.div 
+                    key={product._id} 
+                    layout
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <ProductCard 
+                      product={product} 
+                      onSelectForCompare={handleSelectForCompare} 
+                      isSelectedForCompare={selectedForCompare.some(p => p._id === product._id)} 
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </motion.div>
           )}
 

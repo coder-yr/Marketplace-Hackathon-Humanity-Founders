@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { pageVariants } from '@/shared/animations'
+import { motion } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 import { cn } from '@/shared/utils/cn'
 
 interface PageWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -33,23 +33,18 @@ export const PageWrapper = forwardRef<HTMLDivElement, PageWrapperProps>(
     if (!animate) return content
 
     return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={typeof window !== 'undefined' ? window.location.pathname : 'page'}
-          variants={pageVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className={cn(
-            'min-h-screen flex flex-col',
-            withNavbar && 'pt-[var(--navbar-height)]',
-            className,
-          )}
-          {...(props as object)}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+      <motion.div
+        ref={ref}
+        {...presets.page}
+        className={cn(
+          'min-h-screen flex flex-col',
+          withNavbar && 'pt-[var(--navbar-height)]',
+          className,
+        )}
+        {...(props as object)}
+      >
+        {children}
+      </motion.div>
     )
   },
 )

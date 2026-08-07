@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 
 export function ProductDetailPage() {
   const { idOrSlug } = useParams<{ idOrSlug: string }>()
@@ -266,7 +267,10 @@ export function ProductDetailPage() {
             </div>
 
             {/* AI DECISION CENTER */}
-            <div className="bg-white rounded-[24px] border border-[#E2E8F0] shadow-sm p-6 mt-auto relative overflow-hidden">
+            <motion.div 
+              {...presets.scrollReveal}
+              className="mt-8 bg-white rounded-[24px] border border-[#E2E8F0] p-6 lg:p-8 shadow-sm relative overflow-hidden"
+            >
               
               {/* --- DYNAMIC STATES --- */}
               {isAiThinking && (
@@ -341,39 +345,47 @@ export function ProductDetailPage() {
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  onClick={triggerAiWorkflow} 
-                  disabled={isAiThinking}
-                  className="h-12 bg-[#0A2540] hover:bg-[#0066FF] text-white font-bold text-[14px] shadow-sm rounded-[12px]"
-                >
-                  {isAiThinking ? 'Analyzing...' : 'Refresh AI Quote'} <Sparkles className="w-4 h-4 ml-1.5 opacity-70" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleAddToCart}
-                  className="h-12 border-[#E2E8F0] bg-[#F8FAFC] hover:bg-white text-[#0A2540] font-bold text-[14px] rounded-[12px]"
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" /> Add to Plan
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    const el = document.getElementById('comparison-matrix');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="h-10 border-[#E2E8F0] text-[#0A2540] font-bold text-[13px] rounded-[10px]"
-                >
-                  Compare Suppliers
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsRfqModalOpen(true)}
-                  className="h-10 border-[#E2E8F0] text-[#0A2540] font-bold text-[13px] rounded-[10px]"
-                >
-                  <FileText className="w-4 h-4 mr-2" /> Request Custom Quote
-                </Button>
+                <motion.div {...presets.buttonInteraction}>
+                  <Button 
+                    onClick={triggerAiWorkflow} 
+                    disabled={isAiThinking}
+                    className="w-full h-12 bg-[#0A2540] hover:bg-[#0066FF] text-white font-bold text-[14px] shadow-sm rounded-[12px]"
+                  >
+                    {isAiThinking ? 'Analyzing...' : 'Refresh AI Quote'} <Sparkles className="w-4 h-4 ml-1.5 opacity-70" />
+                  </Button>
+                </motion.div>
+                <motion.div {...presets.buttonInteraction}>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleAddToCart}
+                    className="w-full h-12 border-[#E2E8F0] bg-[#F8FAFC] hover:bg-white text-[#0A2540] font-bold text-[14px] rounded-[12px]"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" /> Add to Workspace
+                  </Button>
+                </motion.div>
+                <motion.div {...presets.buttonInteraction}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const el = document.getElementById('comparison-matrix');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="w-full h-10 border-[#E2E8F0] text-[#0A2540] font-bold text-[13px] rounded-[10px]"
+                  >
+                    Compare Suppliers
+                  </Button>
+                </motion.div>
+                <motion.div {...presets.buttonInteraction}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsRfqModalOpen(true)}
+                    className="w-full h-10 border-[#E2E8F0] text-[#0A2540] font-bold text-[13px] rounded-[10px]"
+                  >
+                    <FileText className="w-4 h-4 mr-2" /> Request Custom Quote
+                  </Button>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -634,37 +646,22 @@ export function ProductDetailPage() {
           <div className="lg:col-span-2 bg-white rounded-[24px] border border-[#E2E8F0] shadow-sm p-8">
             <h3 className="text-[18px] font-display font-bold text-[#0A2540] mb-6">Technical Specifications</h3>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-6">
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Composition</span>
-                <span className="text-[14px] font-bold text-[#0A2540]">{product.specifications?.Composition || product.specifications?.composition || '100% Organic Cotton'}</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Weight (GSM)</span>
-                <span className="text-[14px] font-bold text-[#0A2540]">{product.specifications?.Weight || product.specifications?.weight || '180 GSM'}</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Width</span>
-                <span className="text-[14px] font-bold text-[#0A2540]">{product.specifications?.Width || product.specifications?.width || '58/60 inches'}</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Weave/Knit</span>
-                <span className="text-[14px] font-bold text-[#0A2540]">{product.specifications?.Weave || 'Twill Weave'}</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Dye Technique</span>
-                <span className="text-[14px] font-bold text-[#0A2540]">{product.specifications?.Dye || 'Reactive Yarn Dyed'}</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider block mb-1">Certifications</span>
-                <div className="flex gap-2 mt-1">
-                  {product.certifications?.map(c => (
-                    <Badge key={c} className="bg-[#F1F5F9] text-[#64748B] text-[10px] font-bold">{c}</Badge>
-                  ))}
-                  {!product.certifications?.length && <span className="text-[14px] font-bold text-[#0A2540]">Oeko-Tex Standard 100</span>}
-                </div>
-              </div>
-            </div>
+            <motion.div 
+                {...presets.staggeredList}
+                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              >
+                {[
+                  { label: 'Yarn Count', val: product.specifications?.yarnCount || '40s' },
+                  { label: 'Density', val: product.specifications?.density || '133x72' },
+                  { label: 'Weight', val: product.specifications?.weight || '140gsm' },
+                  { label: 'Width', val: product.specifications?.width || '57/58"' },
+                ].map((spec, i) => (
+                  <motion.div key={i} {...presets.staggeredItem} className="bg-[#F8FAFC] rounded-[16px] p-4 border border-[#E2E8F0]">
+                    <span className="block text-[11px] font-bold text-[#64748B] uppercase tracking-wider mb-1">{spec.label}</span>
+                    <span className="block text-[14px] font-bold text-[#0A2540]">{spec.val}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
           </div>
 
           {/* Supplier Intelligence Profile */}

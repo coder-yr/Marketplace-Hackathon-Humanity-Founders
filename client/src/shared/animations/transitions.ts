@@ -1,44 +1,40 @@
 import type { Transition } from 'framer-motion'
 
-// Hover (120ms)
-export const transitionHover: Transition = {
-  duration: 0.12,
-  ease: [0.4, 0, 0.2, 1],
+// Enterprise-grade timing constants
+export const TIMING = {
+  FAST: 0.2,
+  NORMAL: 0.3,
+  SLOW: 0.5,
+  CINEMATIC: 0.6,
 }
 
-// Buttons (80ms)
-export const transitionButton: Transition = {
-  duration: 0.08,
-  ease: 'linear',
-}
+// Reusable transition definitions
+export const transitions = {
+  // Snappy for micro-interactions (buttons, hovers)
+  snappy: {
+    type: 'spring',
+    stiffness: 400,
+    damping: 25,
+  } as Transition,
 
-// Drawer (250ms)
-export const transitionDrawer: Transition = {
-  duration: 0.25,
-  ease: [0.32, 0.72, 0, 1], // easeOutCubic
-}
+  // Smooth for page transitions and large layout shifts
+  smooth: {
+    type: 'tween',
+    ease: [0.25, 0.1, 0.25, 1],
+    duration: TIMING.NORMAL,
+  } as Transition,
 
-// Modal (180ms)
-export const transitionModal: Transition = {
-  duration: 0.18,
-  ease: [0.34, 1.56, 0.64, 1],
-}
+  // Cinematic for hero sections and dramatic reveals
+  cinematic: {
+    type: 'tween',
+    ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier for a premium slide
+    duration: TIMING.CINEMATIC,
+  } as Transition,
 
-// Page (300ms)
-export const transitionPage: Transition = {
-  duration: 0.3,
-  ease: [0, 0, 0.2, 1],
+  // Used for layout transitions (e.g. Marketplace filtering)
+  layout: {
+    type: 'spring',
+    stiffness: 300,
+    damping: 30,
+  } as Transition,
 }
-
-// Cards (120ms)
-export const transitionCard: Transition = {
-  duration: 0.12,
-  ease: [0.4, 0, 0.2, 1],
-}
-
-// Keep legacy ones for fallback during refactor
-export const transitionFast: Transition = { duration: 0.15, ease: [0.4, 0, 0.2, 1] }
-export const transitionNormal: Transition = { duration: 0.25, ease: [0, 0, 0.2, 1] }
-export const transitionSlow: Transition = { duration: 0.4, ease: [0, 0, 0.2, 1] }
-export const transitionBounce: Transition = { type: 'spring', stiffness: 400, damping: 25 }
-export const transitionSpring: Transition = { type: 'spring', stiffness: 300, damping: 30 }

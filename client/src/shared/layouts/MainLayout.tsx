@@ -69,18 +69,16 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 lg:gap-4 flex-shrink-0">
-            {isAuthenticated && user?.role === 'buyer' && (
-              <Link to="/cart">
-                <button className="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors relative">
-                  <ShoppingCart className="w-4 h-4" />
-                  {totalItemsCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-[#2563EB] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {totalItemsCount}
-                    </span>
-                  )}
-                </button>
-              </Link>
-            )}
+            <Link to="/cart">
+              <button className="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors relative">
+                <ShoppingCart className="w-4 h-4" />
+                {totalItemsCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-[#2563EB] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {totalItemsCount}
+                  </span>
+                )}
+              </button>
+            </Link>
 
             <button className="relative w-9 h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors">
               <Bell className="w-4 h-4" />

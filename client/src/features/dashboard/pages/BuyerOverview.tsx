@@ -3,8 +3,8 @@ import { Card } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { FileText, ShoppingBag, Bookmark, MessageSquare, Bell, Sparkles, Zap, ArrowRight, AlertTriangle } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { transitionCard, transitionFast } from '@/shared/animations'
+import { motion, AnimatePresence } from 'framer-motion'
+import { presets } from '@/shared/animations/presets'
 import { useWorkspace } from '../hooks/useWorkspace'
 import { formatDistanceToNow } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
@@ -36,9 +36,7 @@ export function BuyerOverview() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={transitionFast}
+      {...presets.page}
       className="max-w-[1400px] mx-auto space-y-8"
     >
       <div className="flex items-center justify-between">
@@ -52,9 +50,9 @@ export function BuyerOverview() {
       </div>
 
       {/* 1. TOP: KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.div {...presets.staggeredList} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {KPI_CARDS.map((kpi, i) => (
-          <motion.div whileHover={{ y: -2, transition: transitionCard }} key={i}>
+          <motion.div {...presets.staggeredItem} {...presets.cardHover} key={i}>
             <Card className="p-6 shadow-sm border border-[var(--border)] bg-white flex flex-col justify-between h-36 relative overflow-hidden group rounded-[20px]">
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[var(--primary)]/5 to-transparent rounded-bl-[100px] -z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex justify-between items-start z-10">
@@ -70,7 +68,7 @@ export function BuyerOverview() {
             </Card>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* 2. MIDDLE: Large Tables/Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -93,31 +91,39 @@ export function BuyerOverview() {
                </div>
             ) : (
               <div className="divide-y divide-[var(--border)]">
-                {rfqs.map((rfq) => (
-                  <div key={rfq._id} className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center text-[12px] font-bold text-[var(--body)] border border-[var(--border)] uppercase">
-                        {rfq._id.substring(rfq._id.length - 4)}
+                <AnimatePresence mode="popLayout">
+                  {rfqs.map((rfq) => (
+                    <motion.div 
+                      key={rfq._id} 
+                      layout 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center text-[12px] font-bold text-[var(--body)] border border-[var(--border)] uppercase">
+                          {rfq._id.substring(rfq._id.length - 4)}
+                        </div>
+                        <div>
+                          <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">{rfq.title}</h4>
+                          <p className="text-[12px] font-medium text-[var(--body)]">
+                            {rfq.targetPrice ? `$${rfq.targetPrice}/m` : 'Open Price'} <span className="mx-1 opacity-50">•</span> 
+                            {formatDistanceToNow(new Date(rfq.createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="text-[14px] font-bold text-[var(--heading)] mb-0.5">{rfq.title}</h4>
-                        <p className="text-[12px] font-medium text-[var(--body)]">
-                          {rfq.targetPrice ? `$${rfq.targetPrice}/m` : 'Open Price'} <span className="mx-1 opacity-50">•</span> 
-                          {formatDistanceToNow(new Date(rfq.createdAt), { addSuffix: true })}
-                        </p>
+                      <div className="flex items-center gap-4">
+                        <Badge className={`w-24 justify-center text-[11px] font-bold uppercase tracking-wider ${
+                          rfq.status === 'quoted' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20' : 
+                          rfq.status === 'pending' || rfq.status === 'published' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' : 
+                          'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20'
+                        }`}>
+                          {rfq.status}
+                        </Badge>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge className={`w-24 justify-center text-[11px] font-bold uppercase tracking-wider ${
-                        rfq.status === 'quoted' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20' : 
-                        rfq.status === 'pending' || rfq.status === 'published' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' : 
-                        'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20'
-                      }`}>
-                        {rfq.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>
