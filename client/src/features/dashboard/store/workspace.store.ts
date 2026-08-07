@@ -8,7 +8,7 @@ interface WorkspaceState {
   error: string | null
   lastFetched: number | null
 
-  fetchWorkspace: (force?: boolean) => Promise<void>
+  fetchWorkspace: (force?: boolean, silent?: boolean) => Promise<void>
   clearWorkspace: () => void
 }
 
@@ -20,17 +20,19 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   error: null,
   lastFetched: null,
 
-  fetchWorkspace: async (force = false) => {
+  fetchWorkspace: async (force = false, silent = false) => {
     const { data, lastFetched, isLoading } = get()
     
-    if (isLoading) return
+    if (isLoading && !silent) return
     
     // Return cached data if within TTL
     if (!force && data && lastFetched && Date.now() - lastFetched < CACHE_TTL) {
       return
     }
 
-    set({ isLoading: true, error: null })
+    if (!silent) {
+      set({ isLoading: true, error: null })
+    }
     try {
       const response = await workspaceApi.getWorkspace()
       set({ 

@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { api } from '@/lib/axios'
+import { BuyerProcurementList } from '../components/BuyerProcurementList'
 
 export function ProcurementWorkspace() {
   const navigate = useNavigate()
@@ -186,94 +187,100 @@ export function ProcurementWorkspace() {
         </Container>
       </div>
 
-      {/* Kanban Board Area */}
-      <div className="px-6 py-8 overflow-x-auto h-[calc(100vh-140px)] custom-scrollbar">
-        <div className="flex gap-6 min-w-max pb-8 h-full">
-          
-          {KANBAN_COLUMNS.map((col) => {
-            const columnItems = filteredItems.filter(item => item.column === col.id)
-            return (
-              <div 
-                key={col.id} 
-                className="w-[320px] flex flex-col h-full"
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, col.id)}
-              >
-                {/* Column Header */}
-                <div className="flex items-center justify-between mb-4 px-1">
-                  <h3 className="text-[14px] font-bold text-[#0A2540] uppercase tracking-wider">{col.title}</h3>
-                  <span className="bg-[#E2E8F0] text-[#475569] text-[11px] font-bold px-2 py-0.5 rounded-full">{columnItems.length}</span>
-                </div>
-                
-                {/* Column Body */}
-                <div className="bg-[#F1F5F9] rounded-[16px] p-3 flex-1 overflow-y-auto border border-[#E2E8F0] space-y-3 custom-scrollbar">
+      {/* Main Content Area */}
+      {isSupplier ? (
+        <div className="px-6 py-8 overflow-x-auto h-[calc(100vh-140px)] custom-scrollbar">
+          <div className="flex gap-6 min-w-max pb-8 h-full">
+            
+            {KANBAN_COLUMNS.map((col) => {
+              const columnItems = filteredItems.filter(item => item.column === col.id)
+              return (
+                <div 
+                  key={col.id} 
+                  className="w-[320px] flex flex-col h-full"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, col.id)}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between mb-4 px-1">
+                    <h3 className="text-[14px] font-bold text-[#0A2540] uppercase tracking-wider">{col.title}</h3>
+                    <span className="bg-[#E2E8F0] text-[#475569] text-[11px] font-bold px-2 py-0.5 rounded-full">{columnItems.length}</span>
+                  </div>
                   
-                  {columnItems.length === 0 ? (
-                    <div className="h-full w-full border-2 border-dashed border-[#E2E8F0] rounded-[12px] flex items-center justify-center text-[12px] font-bold text-[#94A3B8]">
-                      Drop items here
-                    </div>
-                  ) : columnItems.map((item) => (
-                    <motion.div 
-                      draggable
-                      onDragStart={(e: any) => handleDragStart(e, item)}
-                      layoutId={item.id}
-                      key={item.id}
-                      onClick={() => {
-                        if (item.type === 'order') navigate(`/dashboard/orders/${item.id}`)
-                        else navigate(`/dashboard/rfqs/${item.id}`)
-                      }}
-                      className="bg-white p-4 rounded-[12px] shadow-sm border border-[#E2E8F0] cursor-pointer hover:shadow-md hover:border-[#CBD5E1] transition-all group relative active:cursor-grabbing"
-                    >
-                      {/* Priority Indicator */}
-                      <div className={`absolute top-0 left-0 w-1 h-full rounded-l-[12px] ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                      
-                      <div className="flex justify-between items-start mb-3">
-                        <Badge className="bg-[#F8FAFC] text-[#64748B] text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 border border-[#E2E8F0]">
-                          {item.type === 'order' ? 'ORDER' : 'RFQ'}
-                        </Badge>
-                        <span className="text-[11px] font-semibold text-[#94A3B8] flex items-center gap-1"><Clock className="w-3 h-3"/> {item.date}</span>
+                  {/* Column Body */}
+                  <div className="bg-[#F1F5F9] rounded-[16px] p-3 flex-1 overflow-y-auto border border-[#E2E8F0] space-y-3 custom-scrollbar">
+                    
+                    {columnItems.length === 0 ? (
+                      <div className="h-full w-full border-2 border-dashed border-[#E2E8F0] rounded-[12px] flex items-center justify-center text-[12px] font-bold text-[#94A3B8]">
+                        Drop items here
                       </div>
-
-                      <h4 className="font-bold text-[#0A2540] text-[14px] mb-1 leading-snug group-hover:text-[#0066FF] transition-colors">{item.title}</h4>
-                      <p className="text-[12px] text-[#64748B] font-medium mb-3">{item.supplier}</p>
-                      
-                      {/* Status Specific Addons */}
-                      {item.alert && (
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-[6px] border border-amber-200 w-fit">
-                          <AlertCircle className="w-3.5 h-3.5" /> {item.alert}
+                    ) : columnItems.map((item) => (
+                      <motion.div 
+                        draggable
+                        onDragStart={(e: any) => handleDragStart(e, item)}
+                        layoutId={item.id}
+                        key={item.id}
+                        onClick={() => {
+                          if (item.type === 'order') navigate(`/dashboard/orders/${item.id}`)
+                          else navigate(`/dashboard/rfqs/${item.id}`)
+                        }}
+                        className="bg-white p-4 rounded-[12px] shadow-sm border border-[#E2E8F0] cursor-pointer hover:shadow-md hover:border-[#CBD5E1] transition-all group relative active:cursor-grabbing"
+                      >
+                        {/* Priority Indicator */}
+                        <div className={`absolute top-0 left-0 w-1 h-full rounded-l-[12px] ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                        
+                        <div className="flex justify-between items-start mb-3">
+                          <Badge className="bg-[#F8FAFC] text-[#64748B] text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 border border-[#E2E8F0]">
+                            {item.type === 'order' ? 'ORDER' : 'RFQ'}
+                          </Badge>
+                          <span className="text-[11px] font-semibold text-[#94A3B8] flex items-center gap-1"><Clock className="w-3 h-3"/> {item.date}</span>
                         </div>
-                      )}
-                      
-                      {item.progress !== undefined && (
-                        <div className="mt-2">
-                          <div className="flex justify-between text-[10px] font-bold text-[#64748B] mb-1">
-                            <span>Progress</span>
-                            <span>{item.progress}%</span>
+
+                        <h4 className="font-bold text-[#0A2540] text-[14px] mb-1 leading-snug group-hover:text-[#0066FF] transition-colors">{item.title}</h4>
+                        <p className="text-[12px] text-[#64748B] font-medium mb-3">{item.supplier}</p>
+                        
+                        {/* Status Specific Addons */}
+                        {item.alert && (
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-[6px] border border-amber-200 w-fit">
+                            <AlertCircle className="w-3.5 h-3.5" /> {item.alert}
                           </div>
-                          <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#0066FF] rounded-full" style={{ width: `${item.progress}%` }} />
+                        )}
+                        
+                        {item.progress !== undefined && (
+                          <div className="mt-2">
+                            <div className="flex justify-between text-[10px] font-bold text-[#64748B] mb-1">
+                              <span>Progress</span>
+                              <span>{item.progress}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                              <div className="h-full bg-[#0066FF] rounded-full" style={{ width: `${item.progress}%` }} />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      
-                      {item.tracking && (
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F1F5F9]">
-                          <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#0A2540]">
-                            <Truck className="w-3.5 h-3.5 text-[#0066FF]" /> {item.tracking}
-                          </span>
-                        </div>
-                      )}
+                        )}
+                        
+                        {item.tracking && (
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F1F5F9]">
+                            <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#0A2540]">
+                              <Truck className="w-3.5 h-3.5 text-[#0066FF]" /> {item.tracking}
+                            </span>
+                          </div>
+                        )}
 
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    ))}
 
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-          
+              )
+            })}
+            
+          </div>
         </div>
-      </div>
+      ) : (
+        <Container className="py-8">
+          <BuyerProcurementList items={filteredItems} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </Container>
+      )}
     </div>
   )
 }

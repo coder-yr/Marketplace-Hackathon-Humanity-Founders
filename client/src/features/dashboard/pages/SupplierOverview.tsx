@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom'
 
 export function SupplierOverview() {
   const { user } = useAuthStore()
-  const { workspace, isLoading, refresh } = useWorkspace()
+  const { workspace, isLoading, refresh } = useWorkspace(3000)
   const navigate = useNavigate()
 
   useEffect(() => {

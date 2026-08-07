@@ -10,7 +10,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
 export function BuyerOverview() {
-  const { workspace, isLoading, refresh } = useWorkspace()
+  const { workspace, isLoading, refresh } = useWorkspace(3000)
   const navigate = useNavigate()
 
   useEffect(() => {
